@@ -43,8 +43,8 @@ def execute(filters=None):
 #			if (ss_earning_map.get(ss.name, {}).get(e) != None and ss_earning_map.get(ss.name, {}).get(e) =='SB'):							
 			row.append(ss_earning_map.get(ss.name, {}).get(e))
 
-			print 'Abono'
-			print ss_earning_map1.get(ss.name, {}).get(e)
+			# print 'Abono'
+			# print ss_earning_map1.get(ss.name, {}).get(e)
 
 			if (ss_earning_map1.get(ss.name, {}).get(e) == 'SB'):
 			#SI = (SB + HE - PA + PP) - (FTJSS - FI )
@@ -137,18 +137,18 @@ def execute(filters=None):
 			row.append(ss_ded_map.get(ss.name, {}).get(d))
 
 			inss_status = 0
-			print 'DEscontos'
-			print ss_ded_map1.get(ss.name, {}).get(d)
+			# print 'DEscontos'
+			# print ss_ded_map1.get(ss.name, {}).get(d)
 			if (ss_ded_map1.get(ss.name, {}).get(d) == 'INSS') and (inss_status ==0):
 				inss_status = 1
 				inss_pessoal = inss_pessoal + flt(ss_ded_map.get(ss.name, {}).get(d))
-				print 'INSSS'
-				print inss_pessoal
+				# print 'INSSS'
+				# print inss_pessoal
 
 		row += [ss.total_deduction, ss.net_pay]
 #		if inss_status == 1:
-		print inss_pessoal
-		print encargo_inss
+		# print inss_pessoal
+		# print encargo_inss
 		if inss_pessoal == 0: encargo_inss = 0
 		encargo_inss = (encargo_inss * 0.08)			
 		inss_pessoal = (inss_pessoal + encargo_inss)
@@ -178,14 +178,14 @@ def get_columns(salary_slips):
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1):
 		#salary_components[_(component.type)].append(component.salary_component)
 
-		print 'COMPONENT SALAR'
-		print component.salary_component
+		# print 'COMPONENT SALAR'
+		# print component.salary_component
 		salary_components[_(component.type)].append(component.salary_component)
 		salary_components1[_(component.type)].append(component.salary_component_abbr)
 	
-	print 'Component salarial'
-	print salary_components
-	print salary_components1
+	# print 'Component salarial'
+	# print salary_components
+	# print salary_components1
 
 
 	#columns = columns + [('Rem. Adicional' if frappe.db.get_value('Salary Component',{'name':e},'salary_component_abbr') =='ST' else frappe.db.get_value('Salary Component',{'name':e},'salary_component_abbr' if e !='Salario Base' else 'salary_component') + (":Currency:120" if (e =='Salario Base' or frappe.db.get_value('Salary Component',{'name':e},'salary_component_abbr') == 'ST') else ":Currency:-1")) for e in salary_components[_("Earning")]] + \
@@ -201,9 +201,9 @@ def get_columns(salary_slips):
 		[_("Total Deduction") + ":Currency:120", _("Net Pay") + ":Currency:120"]
 	"""
 
-	print 'COLUNAS'	
-	print columns
-	print columns[3][1]
+	# print 'COLUNAS'
+	# print columns
+	# print columns[3][1]
 
 
 

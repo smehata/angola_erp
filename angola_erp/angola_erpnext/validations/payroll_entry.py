@@ -25,11 +25,7 @@ def submit_salary_slips(doc):
 	"""
 		Submit all salary slips based on selected criteria
 	"""
-	print "SUMIT SALARY SLIPS"
 	x = json.loads(doc)
-	print type(x)
-	print type(doc)
-	print x
 	x2 = frappe.get_doc("Payroll Entry",x["name"])
 	#x1 = eval(x2)
 	doc = x2
@@ -42,21 +38,16 @@ def submit_salary_slips(doc):
 		if key == 'cost_center':
 			exist_center= 1
 			contasal_cent = value
-			print 'CENTRO CUSTO'
-			print key, value
 
 
 		if key == 'project':
 			exist_prj= 1
 			contasal_prj = value
-			print 'PROJECTO'
-			print key, value
 
 
 	#Cancela if no Centro de Custo.
 	if exist_center == 0:
-		frappe.throw(_("Escolher o Centro de Custo."))			
-	print contasal_cent
+		frappe.throw(_("Escolher o Centro de Custo."))
 
 	#HELKYDS 
 	#removed 
@@ -87,10 +78,6 @@ def submit_salary_slips(doc):
 				not_submitted_ss.append(ss_dict)
 	if submitted_ss:
 		jv_name = make_accural_jv_entry(doc)
-		print ("PAYROLL SUBMITTEDDDDDDDDDDDDDDDDDDD")
-		print jv_name
-		print ss_obj.start_date
-		print ss_obj.end_date
 
 		#frappe.msgprint(_("Salary Slip submitted for period from {0} to {1}")
 		#	.format(ss_obj.start_date, ss_obj.end_date))
@@ -214,11 +201,7 @@ def get_sal_slip_list(self, ss_status, as_dict=False):
 		and (t1.journal_entry is null or t1.journal_entry = "") and ifnull(salary_slip_based_on_timesheet,0) = %s %s
 	""" % ('%s', '%s', '%s','%s', cond), (ss_status, self.start_date, self.end_date, self.salary_slip_based_on_timesheet), as_dict=as_dict)
 
-
-	print ss_list
-
 	return ss_list
-
 
 
 def get_loan_details(self):
@@ -351,29 +334,16 @@ def make_accural_jv_entry(self):
 
 		contaseg_soc = frappe.db.sql(""" SELECT name from `tabAccount` where company = %s and name like '7252%%'  """,(empresa.name),as_dict=False)
 
-		print contaseg_soc
 
 		if (contaseg_soc == ()):
-			print "VAZIO"
-			print "VAZIO"
-			print "VAZIO"
-			print "VAZIO"
 			contaseg_soc = frappe.db.sql(""" SELECT name from `tabAccount` where company = %s and name like '5.10.80.10.10.20.90%%'  """,(empresa.name),as_dict=False)
 
-			print contaseg_soc
 
 	
 		ss_list = get_sal_slip_list(self,ss_status=1)
-		print "POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-		print "POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-		print "POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-		print "POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-		print ss_list
 		saliliquido = 0
 		for x in ss_list:
-			print x
 			ss_obj = frappe.get_doc("Salary Slip",x[0])
-			print ss_obj.salario_iliquido				
 			saliliquido = saliliquido + flt(ss_obj.salario_iliquido)
 
 		# =============
@@ -389,47 +359,21 @@ def make_accural_jv_entry(self):
 				})
 
 			#HELKYDS
-			conta = acc;
-			# 72210000 or 5.10.80.10.10.20.90 
-			print "VEvervegtertasdfasfdsafsadf"
-			print "VEvervegtertasdfasfdsafsadf"
-			print "EARNINGS"
-			print acc.encode('utf-8')
-			print conta.find('72210000')
-			print conta.find('5.10.80.10.10.20.10') 
+			conta = acc
 
 			if (conta.find('72210000') !=-1):
 				contasal = acc
 				contasal_amt = round(saliliquido * 0.08) # round(amt * 0.08)
-#				contasal_prj = self['project'] 
-				print "CONTA 72210000"
-				print contaseg_soc[0][0]
-				print amount
-				print contasal_amt
-				print payable_amount
+#				contasal_prj = self['project']
 
 			elif (conta.find('5.10.80.10.10.20.10') !=-1):
 				contasal = acc
 				contasal_amt = round(saliliquido * 0.08) # round(amt * 0.08)
 
-				print "CONTA 5.10.80.10.10.20.10"
-				print contaseg_soc[0][0]
-				print amount
-				print contasal_amt
-				print payable_amount
-
 		#Acrescenta a conta da Seguranca Social
-
-		print "CENTRO CUSTO SEG. SOCIAL "
 		segsocial = frappe.db.sql(""" SELECT name from `tabCost Center` where company = %s and cost_center_name = 'seguranca social'  """,(empresa.name),as_dict=False)
 
-		print "Seg. social"
-		print segsocial[0][0]
-
-
 		if (contasal != 0):
-			print "ADIICINAEIIII o DEBITO "
-			print  contasal_amt
 			accounts.append({
 					"account": contaseg_soc[0][0],
 					"debit_in_account_currency": contasal_amt,
@@ -437,10 +381,7 @@ def make_accural_jv_entry(self):
 					"project": contasal_prj
 				})
 			payable_amount = payable_amount+contasal_amt
-			#contasal = 0			
-	
-
-		print payable_amount
+			#contasal = 0
 		
 		# ============
 
@@ -461,25 +402,13 @@ def make_accural_jv_entry(self):
 				contasal = acc
 				#contasal_amt = round(amt * 0.08)
 #				contasal_cent = self['cost_center'] 
-#				contasal_prj = self['project'] 
-
-				print "CONTA 34610000"
-				print acc.encode('utf-8')
-				print amount
-				print contasal_amt
-				print payable_amount
+#				contasal_prj = self['project']
 
 			elif (conta.find('2.80.20.20.20') !=-1):
 				contasal = acc
 				#contasal_amt = round(amt * 0.08)
 #				contasal_cent = self['cost_center'] 
-#				contasal_prj = self['project'] 
-
-				print "CONTA 2.80.20.20.20"
-				print acc.encode('utf-8')
-				print amount
-				print contasal_amt
-				print payable_amount
+#				contasal_prj = self['project']
 
 		#Acrescenta a conta do DEBITO da Seguranca Social
 		if (contasal != 0):
@@ -490,11 +419,7 @@ def make_accural_jv_entry(self):
 					"cost_center": self.cost_center,
 					"project": contasal_prj
 				})
-			payable_amount = payable_amount-contasal_amt		
-			contasal = 0	
-			print "ADIICINAEIIII o CREDITO "
-			print  contasal_amt
-			print payable_amount
+			payable_amount = payable_amount-contasal_amt
 
 		# ==========
 

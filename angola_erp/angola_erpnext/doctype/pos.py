@@ -18,18 +18,19 @@ from frappe.utils import cstr, get_datetime, getdate, cint, get_datetime_str
 
 
 def as_unicode(text, encoding='utf-8'):
- 	#Convert to unicode if required
-	print ("AS UNICODE DEF")
-	if text and not isinstance(text, unicode):
-		if isinstance(text, unicode):
-			return text
-		elif text==None:
-			return ''
-		elif isinstance(text, basestring):
-	 		return unicode(text, encoding)
-	 	else:
-			return text or ''
-			return unicode(text)
+	pass
+	#Convert to unicode if required
+	# print ("AS UNICODE DEF")
+	# if text and not isinstance(text, unicode):
+	# 	if isinstance(text, unicode):
+	# 		return text
+	# 	elif text==None:
+	# 		return ''
+	# 	elif isinstance(text, basestring):
+	# 	return unicode(text, encoding)
+	# 	else:
+	# 		return text or ''
+	# 		return unicode(text)
 
 @frappe.whitelist()
 def get_pos_data():
@@ -49,8 +50,6 @@ def get_pos_data():
 	default_print_format = pos_profile.get('print_format') or "Point of Sale"
 	print_template = frappe.db.get_value('Print Format', default_print_format, 'html')
 	customers = get_customers_list(pos_profile)
-
-	print 'POSsssssssssssssssssssssssss'
 
 	return {
 		'doc': doc,

@@ -23,7 +23,8 @@ class AtendimentoBar(Document):
 	def validate(self):
 
         	if self.get('__islocal'):
-           		print "LOCAL"
+				pass
+           		# print "LOCAL"
        
 		elif (self.pagamento_por == "Conta-Corrente"):
 			if (self.conta_corrente =="") or (self.conta_corrente == "nome do cliente"):
@@ -71,10 +72,10 @@ class AtendimentoBar(Document):
 		if (self.conta_corrente !="nome do cliente") and (self.conta_corrente !=None) and (self.status_atendimento == "Fechado") and (self.conta_corrente_status == "Não Pago") :
 			if (frappe.db.sql("""select cc_nome_cliente from `tabCONTAS_CORRENTES` WHERE cc_nome_cliente =%s """,self.conta_corrente, as_dict=False)) != ():
 				#existe faz os calculos da divida
-				print " CLIENTE JA EXISTE"
+				# print " CLIENTE JA EXISTE"
 				ccorrente = frappe.get_doc("CONTAS_CORRENTES", self.conta_corrente)
-				print "CLIENTE"
-				print ccorrente.name
+				# print "CLIENTE"
+				# print ccorrente.name
 #				ccorrente.cc_conta_corrente = self.conta_corrente
 #				ccorrente.cc_status_conta_corrente = "Não Pago"
 
@@ -107,15 +108,15 @@ class AtendimentoBar(Document):
 
 			else:
 				#novo
-				print " CLIENTE NAO EXISTE"
-				print self.conta_corrente
+				# print " CLIENTE NAO EXISTE"
+				# print self.conta_corrente
 				ccorrente = frappe.new_doc("CONTAS_CORRENTES")
 				ccorrente.cc_nome_cliente = self.conta_corrente
 				ccorrente.name = self.conta_corrente
 				ccorrente.cc_status_conta_corrente = "Não Pago"
 				ccorrente.insert()
 
-				print "CONTAS CORRENTES FEITA !!!!!!"
+				# print "CONTAS CORRENTES FEITA !!!!!!"
 
 				totalextra = 0
 				#for extras in frappe.db.sql(""" SELECT nome_servico,total_extra from `tabExtras_item` where parent = %s """,self.name,as_dict=True):
@@ -168,13 +169,7 @@ def check_caixa_aberto():
 
 @frappe.whitelist()
 def atualiza_ccorrente(cliente,recibo):
-
-	print cliente
-	print recibo
 	for ccorrente1 in frappe.db.sql("""SELECT name,numero_registo,parent,status_conta_corrente from `tabCC_detalhes` where numero_registo = %s and parent = %s """, (recibo,cliente), as_dict=True):
-		print ccorrente1.name
-		print "CAMPOS !!!!!"
-
 		reset_idx = frappe.get_doc("CC_detalhes",ccorrente1.name)
 	#	print reset_idx.name
 	#	print reset_idx.parent

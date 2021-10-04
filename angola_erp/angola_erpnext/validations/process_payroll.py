@@ -3,6 +3,9 @@
 # License: GNU General Public License v3. See license.txt
 
 from __future__ import unicode_literals
+
+import json
+
 import frappe
 from frappe.utils import cint, flt, nowdate, add_days, getdate, fmt_money
 from frappe import _
@@ -15,39 +18,39 @@ from frappe.model.document import Document
 contasal_cent = '';
 contasal_prj = '';
 
-#class ProcessPayroll(Document):
-#	def __init__(self):
-#		pass
+class ProcessPayroll(Document):
+	def __init__(self):
+		pass
 
 @frappe.whitelist(allow_guest=True)
 def submit_salary_slips1(doc):
-	print "SUBMETER SALARIOSSSSSSSSS"
-	print doc
+	# print "SUBMETER SALARIOSSSSSSSSS"
+	# print doc
 	dd = eval(doc)
-	for key, value in dd.items():
-		print key, value
+	# for key, value in dd.items():
+		# print key, value
 
 #	dd1 = json.dumps(dd)
 #	print dd1['start_date']
 
-	print dd['start_date']
+	# print dd['start_date']
 
 	s = eval(doc)
-	print s.start_date
+	# print s.start_date
 	
 #	doc = json.loads(doc)
 #	print doc
-	print doc.start_date
-	print getattr(doc,'start_date')
+	# print doc.start_date
+	# print getattr(doc,'start_date')
 
 	ss = {}
 	ss = ProcessPayroll(**doc)
 
-	print ss
-	print ss.start_date
-	print self.start_date
-
-	print ss["end_date"]
+	# print ss
+	# print ss.start_date
+	# print self.start_date
+	#
+	# print ss["end_date"]
 	return
 	
 
@@ -57,11 +60,11 @@ def submit_salary_slips(doc):
 		Submit all salary slips based on selected criteria
 	"""
 
-	print "SUBMETER SALARIOSSSSSSSSS"
-	print "SUBMETER SALARIOSSSSSSSSS"
-	print "SUBMETER SALARIOSSSSSSSSS"
-	print "SUBMETER SALARIOSSSSSSSSS"
-	print doc
+	# print "SUBMETER SALARIOSSSSSSSSS"
+	# print "SUBMETER SALARIOSSSSSSSSS"
+	# print "SUBMETER SALARIOSSSSSSSSS"
+	# print "SUBMETER SALARIOSSSSSSSSS"
+	# print doc
 
 	doc = eval(doc)
 	
@@ -70,7 +73,7 @@ def submit_salary_slips(doc):
 	exist_prj = 0
 
 	for key, value in doc.items():
-		print key, value
+		# print key, value
 		if key == 'cost_center':
 			exist_center= 1
 			contasal_cent = value
@@ -83,7 +86,7 @@ def submit_salary_slips(doc):
 	#Cancela if no Centro de Custo.
 	if exist_center == 0:
 		frappe.throw(_("Escolher o Centro de Custo."))			
-	print contasal_cent
+	# print contasal_cent
 
 #	print ss_obj.employee_name
 
@@ -92,8 +95,8 @@ def submit_salary_slips(doc):
 	jv_name = ""
 	ss_list = get_sal_slip_list(doc,ss_status=0)
 
-	print "ss LIST " 
-	print ss_list
+	# print "ss LIST "
+	# print ss_list
 
 	submitted_ss = []
 	not_submitted_ss = []
@@ -106,9 +109,9 @@ def submit_salary_slips(doc):
 
 		ss_dict["Salary Slip"] = format_as_links(ss_obj.name)[0]
 		
-		print "TRABALHADORRRRRRRRR"
-		print ss_obj.name
-		print ss_obj.salario_iliquido
+		# print "TRABALHADORRRRRRRRR"
+		# print ss_obj.name
+		# print ss_obj.salario_iliquido
 
 
 		if ss_obj.net_pay<0:
@@ -121,8 +124,8 @@ def submit_salary_slips(doc):
 				not_submitted_ss.append(ss_dict)
 	if submitted_ss:
 		jv_name = make_accural_jv_entry(doc)		
-		print "JV ENTRADA "
-		print jv_name
+		# print "JV ENTRADA "
+		# print jv_name
 
 	return create_submit_log(doc,submitted_ss, not_submitted_ss, jv_name)
 
@@ -168,7 +171,7 @@ def gett(doctype, name=None, filters=None):
 	if filters and not name:
 		name = frappe.db.get_value(doctype, json.loads(filters))
 		if not name:
-			raise Exception, "No document found for given filters"
+			raise Exception("No document found for given filters")
 
 	doc = frappe.get_doc(doctype, name)
 	if not doc.has_permission("read"):
@@ -386,29 +389,17 @@ def make_accural_jv_entry(self):
 
 		contaseg_soc = frappe.db.sql(""" SELECT name from `tabAccount` where company = %s and name like '7252%%'  """,(empresa.name),as_dict=False)
 
-		print contaseg_soc
+		# print contaseg_soc
 
 		if (contaseg_soc == ()):
-			print "VAZIO"
-			print "VAZIO"
-			print "VAZIO"
-			print "VAZIO"
 			contaseg_soc = frappe.db.sql(""" SELECT name from `tabAccount` where company = %s and name like '5.10.80.10.10.20.90%%'  """,(empresa.name),as_dict=False)
 
-			print contaseg_soc
 
 	
 		ss_list = get_sal_slip_list(self,ss_status=1)
-		print "POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-		print "POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-		print "POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-		print "POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-		print ss_list
 		saliliquido = 0
 		for x in ss_list:
-			print x
 			ss_obj = frappe.get_doc("Salary Slip",x[0])
-			print ss_obj.salario_iliquido				
 			saliliquido = saliliquido + flt(ss_obj.salario_iliquido)
 
 
@@ -421,48 +412,26 @@ def make_accural_jv_entry(self):
 					"cost_center": self['cost_center'], # contasal_cent,
 					"project": contasal_prj 
 				})
-			conta = acc;
-			# 72210000 or 5.10.80.10.10.20.90 
-			print "VEvervegtertasdfasfdsafsadf"
-			print "VEvervegtertasdfasfdsafsadf"
-			print "EARNINGS"
-			print acc
-			print conta.find('72210000')
-			print conta.find('5.10.80.10.10.20.10') 
+			conta = acc
+			# 72210000 or 5.10.80.10.10.20.90
 
 			if (conta.find('72210000') !=-1):
 				contasal = acc
 				contasal_amt = round(saliliquido * 0.08) # round(amt * 0.08)
-#				contasal_prj = self['project'] 
-				print "CONTA 72210000"
-				print contaseg_soc[0][0]
-				print amt
-				print contasal_amt
-				print adjustment_amt
+#				contasal_prj = self['project']
 
 			elif (conta.find('5.10.80.10.10.20.10') !=-1):
 				contasal = acc
 				contasal_amt = round(saliliquido * 0.08) # round(amt * 0.08)
-#				contasal_prj = self['project'] 
-				print "CONTA 5.10.80.10.10.20.10"
-				print contaseg_soc[0][0]
-				print amt
-				print contasal_amt
-				print adjustment_amt
+#				contasal_prj = self['project']
 
 
 		#Acrescenta a conta da Seguranca Social
-
-		print "CENTRO CUSTO SEG. SOCIAL "
 		segsocial = frappe.db.sql(""" SELECT name from `tabCost Center` where company = %s and cost_center_name = 'seguranca social'  """,(empresa.name),as_dict=False)
 
-		print "Seg. social"
-		print segsocial[0][0]
 #		print ss_obj.employee_name
 
 		if (contasal != 0):
-			print "ADIICINAEIIII o DEBITO "
-			print  contasal_amt
 			account_amt_list.append({
 					"account": contaseg_soc[0][0],
 					"debit_in_account_currency": contasal_amt,
@@ -473,7 +442,6 @@ def make_accural_jv_entry(self):
 			#contasal = 0			
 	
 #		print ss_obj.employee_name
-		print adjustment_amt
 
 		for acc, amt in deductions.items():
 			adjustment_amt = adjustment_amt-amt
@@ -489,25 +457,13 @@ def make_accural_jv_entry(self):
 				contasal = acc
 				#contasal_amt = round(amt * 0.08)
 #				contasal_cent = self['cost_center'] 
-#				contasal_prj = self['project'] 
-
-				print "CONTA 34610000"
-				print acc
-				print amt
-				print contasal_amt
-				print adjustment_amt
+#				contasal_prj = self['project']
 
 			elif (conta.find('2.80.20.20.20') !=-1):
 				contasal = acc
 				#contasal_amt = round(amt * 0.08)
 #				contasal_cent = self['cost_center'] 
-#				contasal_prj = self['project'] 
-
-				print "CONTA 2.80.20.20.20"
-				print acc
-				print amt
-				print contasal_amt
-				print adjustment_amt
+#				contasal_prj = self['project']
 
 		#Acrescenta a conta do DEBITO da Seguranca Social
 		if (contasal != 0):
@@ -519,10 +475,7 @@ def make_accural_jv_entry(self):
 					"project": contasal_prj
 				})
 			adjustment_amt = adjustment_amt-contasal_amt		
-			contasal = 0	
-			print "ADIICINAEIIII o CREDITO "
-			print  contasal_amt
-			print adjustment_amt
+			contasal = 0
 
 		#employee loan
 		if loan_amounts.total_loan_repayment:
@@ -548,7 +501,7 @@ def make_accural_jv_entry(self):
 			journal_entry.submit()
 			jv_name = journal_entry.name
 			update_salary_slip_status(self,jv_name = jv_name)
-		except Exception, e:
+		except Exception as e:
 			frappe.msgprint(e)
 	return jv_name
 
@@ -586,7 +539,7 @@ def update_salary_slip_status(self, jv_name = None):
 		frappe.db.set_value("Salary Slip", ss_obj.name, "journal_entry", jv_name)
 
 def set_start_end_dates(self):
-	update(self,get_start_end_dates(self['payroll_frequency'], 
+	self.update(self,get_start_end_dates(self['payroll_frequency'],
 		self['start_date'] or self['posting_date'], self['company']))
 
 

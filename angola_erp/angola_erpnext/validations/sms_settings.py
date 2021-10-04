@@ -13,7 +13,7 @@ from frappe.utils import nowdate, encode
 from frappe.model.document import Document
 
 import sys
-reload(sys)
+# reload(sys)
 sys.setdefaultencoding('utf8')
 
 def validate_receiver_nos(receiver_list):
@@ -56,15 +56,15 @@ def get_contact_number(contact_name, ref_doctype, ref_name):
 
 
 @frappe.whitelist()
-def send_sms(receiver_list, msg, sender_name = '', success_msg = True):
+def send_sms(receiver_list, msg, sender_name = '', success_msg = True, basestring=None):
 
 	#Test to see if works
 	receiver_list = get_receiver_nos(receiver_list)
 
 	import json
 	if isinstance(receiver_list, basestring):
-		print "Lista para enviar "
-		print receiver_list
+		# print "Lista para enviar "
+		# print receiver_list
 		receiver_list = json.loads(receiver_list)
 		if not isinstance(receiver_list, list):
 			receiver_list = [receiver_list]
@@ -73,19 +73,20 @@ def send_sms(receiver_list, msg, sender_name = '', success_msg = True):
 
 	arg = {
 		'receiver_list' : receiver_list,
-		'message'		: unicode(msg).encode('utf-8'),
+		# 'message'		: unicode(msg).encode('utf-8'),
+		'message'		: "dsssf",
 		'sender_name'	: sender_name or get_sender_name(),
 		'success_msg'	: success_msg
 	}
 
 	#HELKYDS TESTE
-	print "SEND MENSAGEM !!!!!!"
-	print "SEND MENSAGEM !!!!!!"
-	print "SEND MENSAGEM !!!!!!"
-	print "SEND MENSAGEM !!!!!!"
-	print "SEND MENSAGEM !!!!!!"
+	# print "SEND MENSAGEM !!!!!!"
+	# print "SEND MENSAGEM !!!!!!"
+	# print "SEND MENSAGEM !!!!!!"
+	# print "SEND MENSAGEM !!!!!!"
+	# print "SEND MENSAGEM !!!!!!"
 
-	print arg
+	# print arg
 	
 	if frappe.db.get_value('SMS Settings', None, 'sms_gateway_url'):
 		send_via_gateway(arg)
@@ -102,7 +103,7 @@ def send_via_gateway(arg):
 	success_list = []
 	for d in arg.get('receiver_list'):
 		args[ss.receiver_parameter] = d
-		print " ENVIAR PARA "
+		# print " ENVIAR PARA "
 
 		if d[0:2] == '["':
 			d = d[2:len(d)-2]
@@ -116,14 +117,15 @@ def send_via_gateway(arg):
 			return
 
 		if d[0:3] !=244:
-			print d[0:3]
-			d = '244' + d
-			print d
-			print "vermoe"
-			print args[ss.receiver_parameter]
+			pass
+			# print d[0:3]
+			# d = '244' + d
+			# print d
+			# print "vermoe"
+			# print args[ss.receiver_parameter]
 		
 
-		print arg.get('message')
+		# print arg.get('message')
 
 		# http://10.192.8.104/cgi/WebCGI?11401=account=admin&password=helio&port=1&destination=
 		# curl  -s --data "account=sukadra&password=sukadra&port=4&destination=89053709987&content=111111111"  http://192.168.100.130/cgi/WebCGI?11401
@@ -133,12 +135,12 @@ def send_via_gateway(arg):
 		paraquem += "&content="
 		paraquem += arg.get('message') 
 		paraquem += "\r\n\r\n"
-		print "PARA QUEM"
-		print paraquem
-		print ss.sms_gateway_url
+		# print "PARA QUEM"
+		# print paraquem
+		# print ss.sms_gateway_url
 
 		status = send_request(ss.sms_gateway_url, paraquem)
-		print 'status ', status
+		# print 'status ', status
 		if 200 <= status < 300:
 			success_list.append(d)
 
@@ -150,42 +152,43 @@ def send_via_gateway(arg):
 
 
 def send_request(gateway_url, params):
-	print ' SMS SETTINGS - send request Angola_erp'
-	print ' SMS SETTINGS - send request Angola_erp'
-	print ' SMS SETTINGS - send request Angola_erp'
-	print gateway_url
-	print params
+	pass
+	# print ' SMS SETTINGS - send request Angola_erp'
+	# print ' SMS SETTINGS - send request Angola_erp'
+	# print ' SMS SETTINGS - send request Angola_erp'
+	# print gateway_url
+	# print params
 
 	#import requests
 	#response = requests.get(gateway_url, params = params, headers={'Accept': "text/plain, text/html, */*"})
 	#response.raise_for_status()
 
 	#HELKyds
-	import urllib2
+	# import urllib2
 	
-	response = urllib2.Request(gateway_url, params, {'Accept': "text/plain, text/html, */*"})
-	
-	try:
-		f = urllib2.urlopen(response)
-		
-		#for x  in f:	
-		#	print (x)
-	
-		
-		f.close()
+	# response = urllib2.Request(gateway_url, params, {'Accept': "text/plain, text/html, */*"})
+	#
+	# try:
+	# 	f = urllib2.urlopen(response)
+	#
+	# 	#for x  in f:
+	# 	#	print (x)
+	#
+	#
+	# 	f.close()
+	#
+	# except urllib2.HTTPError, e:
+	# 	# print ('HTTPError = ' + str(e.code))
+	# 	return str(e.code)
+	# except urllib2.URLError, e:
+	# 	# print ('URLError = ' + str(e.reason))
+	# 	return str(e.reason)
+	# except httplib.HTTPException, e:
+		# print ('HTTPException')
 
-	except urllib2.HTTPError, e:
-		print ('HTTPError = ' + str(e.code))
-		return str(e.code)
-	except urllib2.URLError, e:
-		print ('URLError = ' + str(e.reason))
-		return str(e.reason)
-	except httplib.HTTPException, e:
-		print ('HTTPException')
 
 
-
-	return f.code
+	# return f.code
 
 
 #=========================
@@ -211,9 +214,6 @@ def send_sms1(receiver_list1, msg):
 	else:
 		receiver_list = get_receiver_nos(receiver_list1)
 	if receiver_list:
-		print receiver_list
-		print "Mensagem"
-		print msg
 		send_sms(receiver_list, cstr(msg))
 
 # Create SMS Log

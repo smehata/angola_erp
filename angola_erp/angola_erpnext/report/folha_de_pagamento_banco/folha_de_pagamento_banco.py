@@ -17,8 +17,8 @@ def execute(filters=None):
 	ss_earning_map = get_ss_earning_map(salary_slips)
 	ss_ded_map = get_ss_ded_map(salary_slips)
 
-	print 'colunas'
-	print columns
+	# print 'colunas'
+	# print columns
 
 	data = []
 	for ss in salary_slips:
@@ -36,19 +36,19 @@ def execute(filters=None):
 			#row += [ss.designation]
 			columns[3] = columns[3].replace('-1','80')
 
-		print ss.bank_name
-		print ss.bank_account_no
+		# print ss.bank_name
+		# print ss.bank_account_no
 
 		if not ss.bank_account_no  == None:
 			#row += [ss.designation]
 			columns[4] = columns[4].replace('-1','80')
 
 
-		print 'ver colunas'
-		print columns
+		# print 'ver colunas'
+		# print columns
 		for e in earning_types:
 			row.append(ss_earning_map.get(ss.name, {}).get(e))
-			print 	ss_earning_map.get(ss.name, {}).get(e)
+			# print 	ss_earning_map.get(ss.name, {}).get(e)
 
 		row += [ss.gross_pay]
 
@@ -77,7 +77,7 @@ def get_columns(salary_slips):
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1):
 		salary_components[_(component.type)].append(component.salary_component)
 
-	print salary_components
+	# print salary_components
 	columns = columns + [(e + ":Currency:-1") for e in salary_components[_("Earning")]] + \
 		[_("Gross Pay") + ":Currency:-1"] + [(d + ":Currency:-1") for d in salary_components[_("Deduction")]] + \
 		[_("Total Deduction") + ":Currency:-1", _("Net Pay") + ":Currency:120"]
@@ -85,9 +85,9 @@ def get_columns(salary_slips):
 	return columns, salary_components[_("Earning")], salary_components[_("Deduction")]
 
 def get_salary_slips(filters):
-	print "DATAS"
-	print filters.get("date_range")[0]
-	print filters.get("date_range")[1]
+	# print "DATAS"
+	# print filters.get("date_range")[0]
+	# print filters.get("date_range")[1]
 
 	filters.update({"from_date": filters.get("date_range")[0], "to_date":filters.get("date_range")[1]})
 	conditions, filters = get_conditions(filters)
