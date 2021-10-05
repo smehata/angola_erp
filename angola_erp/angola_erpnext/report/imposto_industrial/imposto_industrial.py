@@ -15,10 +15,6 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 
 	if filters.get("company"):
 		invoice_list = get_invoices(filters, additional_query_columns)
-
-		print 'Invoice List'
-		print invoice_list
-		print additional_query_columns
 		columns = get_columns(invoice_list, additional_table_columns)
 
 		if not invoice_list:
@@ -110,9 +106,6 @@ def get_invoices(filters, additional_query_columns):
 
 	ImpostoInd = frappe.db.sql(""" select year(posting_date) as Ano, month(posting_date) as Mes, sum(credit) as II from `tabGL Entry` where account like '3412%%' and docstatus = 1 and company=%(company)s and posting_date >= %(from_date)s and posting_date <= %(to_date)s  GROUP BY Mes ORDER BY Ano, Mes """, filters, as_dict=1) 	
 
-	print "IMPOSOT IND"
-	print filters
-	print ImpostoInd
 
 	return ImpostoInd
 	#return Facturas + FacturasPOS

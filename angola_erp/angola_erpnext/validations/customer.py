@@ -71,7 +71,7 @@ def on_update(doc,method):
 	
 	query = """SELECT name, parent from `tabDefaultValue` where defkey = 'Customer' AND defvalue = '%s'""" % (doc.name)
 	extra_perm = frappe.db.sql(query, as_list=1)
-	if extra_perm <> []:
+	if extra_perm != []:
 		for i in range(len(extra_perm)):
 			if extra_perm[i][1] in allowed_ids:
 				pass

@@ -15,7 +15,7 @@ def validate(doc,method):
 	if len(doc.accounts) >1:
 		frappe.throw("Only one account allowed per Asset Category")
 		
-	if len(doc.asset_short_name) <> 3:
+	if len(doc.asset_short_name) != 3:
 		frappe.throw("Asset Short name should be EXACTLY THREE Characters long")
 		
 	if not re.match("^[A-H, J-N, P-Z, 0-9]*$", doc.asset_short_name):

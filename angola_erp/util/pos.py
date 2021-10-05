@@ -15,10 +15,6 @@ from frappe.utils import cstr, get_datetime, getdate, cint, get_datetime_str
 @frappe.whitelist()
 def get_pos_data():
 
-	print ("Get POS DATA ")	
-	print ("Get POS DATA ")	
-	print ("Get POS DATA ")	
-
 	doc = frappe.new_doc('Sales Invoice')
 	doc.is_pos = 1;
 	pos_profile = get_pos_profile(doc.company) or {}
@@ -35,20 +31,6 @@ def get_pos_data():
 	print_template = frappe.db.get_value('Print Format', default_print_format, 'html')
 
 	#TO DELETE
-	print("Doc ", doc)
-	
-	print("default_customer ", pos_profile.get('customer'))
-	#print("items ", get_items_list(pos_profile))
-	print("customers ", get_customers_list(pos_profile))
-	print("serial_no_data ", get_serial_no_data(pos_profile, doc.company))
-	print("batch_no_data ", get_batch_no_data())
-	print("tax_data ", get_item_tax_data())
-	print("price_list_data ", get_price_list_data(doc.selling_price_list))
-	print ("bin_data ", get_bin_data(pos_profile))
-	print("pricing_rules ", get_pricing_rule_data(doc))
-	print("print_template ", print_template)
-	print("pos_profile ", pos_profile)
-
 	return {
 		'doc': doc,
 		'default_customer': pos_profile.get('customer'),
@@ -270,7 +252,7 @@ def get_pricing_rule_data(doc):
 	return pricing_rules
 
 @frappe.whitelist()
-def make_invoice(doc_list):
+def make_invoice(doc_list,basestring):
 	if isinstance(doc_list, basestring):
 		doc_list = json.loads(doc_list)
 
@@ -324,7 +306,7 @@ def submit_invoice(si_doc, name):
 		si_doc.insert()
 		si_doc.submit()
 		frappe.db.commit()
-	except Exception, e:
+	except Exception as e:
 		if frappe.message_log: frappe.message_log.pop()
 		frappe.db.rollback()
 		save_invoice(e, si_doc, name)
@@ -338,9 +320,6 @@ def save_invoice(e, si_doc, name):
 
 #Atendimento Bar
 def get_mesas_list():
-
-	print "mesas "
-	print frappe.db.sql(""" select name, nome_mesa, numero_cartao, mesa_image, status_mesa from tabMesas where status_mesa in ('Livre','Ocupada')  """, as_dict=1)
 	return frappe.db.sql(""" 
 		select
 			name, nome_mesa, numero_cartao, mesa_image, status_mesa
@@ -354,7 +333,7 @@ def submit_atendimento(si_doc, name):
 		si_doc.insert()
 		si_doc.save()
 		#si_doc.submit()
-	except Exception, e:
+	except Exception as e:
 		if frappe.message_log: frappe.message_log.pop()
 		frappe.db.rollback()
 		save_atendimento(e, si_doc, name)
@@ -367,19 +346,19 @@ def save_atendimento(e, si_doc, name):
 
 
 
-def as_unicode(text, encoding='utf-8'):
- 	#Convert to unicode if required
-	print ("AS UNICODE DEF")
-	if text and not isinstance(text, unicode):
-		if isinstance(text, unicode):
-			return text
-		elif text==None:
-			return ''
-		elif isinstance(text, basestring):
-	 		return unicode(text, encoding)
-	 	else:
-			return text or ''
-			return unicode(text)
+def as_unicode(text, encoding='utf-8', basestring=None):
+	pass
+ 	# #Convert to unicode if required
+	# if text and not isinstance(text, unicode):
+	# 	if isinstance(text, unicode):
+	# 		return text
+	# 	elif text==None:
+	# 		return ''
+	# 	elif isinstance(text, basestring):
+	#  		return unicode(text, encoding)
+	#  	else:
+	# 		return text or ''
+	# 		return unicode(text)
 
 
 

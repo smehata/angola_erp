@@ -41,8 +41,8 @@ def get_fiscal_years(transaction_date=None, fiscal_year=None, label="Date", verb
 	if not fy:
 		error_msg = _("""{0} {1} not in any active Fiscal Year. For more details check {2}.""").format(label, formatdate(transaction_date), "https://frappe.github.io/erpnext/user/manual/en/accounts/articles/fiscal-year-error")
 		if verbose==1: frappe.msgprint(error_msg)
-		raise FiscalYearError, error_msg
-	return fy
+		raise FiscalYearError
+		return fy
 
 def validate_fiscal_year(date, fiscal_year, label=_("Date"), doc=None):
 	years = [f[0] for f in get_fiscal_years(date, label=label)]

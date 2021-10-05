@@ -23,9 +23,6 @@ class FichadeProcesso(Document):
 		else:
 			if (self.serie_tipo == "ASTXXXX-"):
 				#replace xxx by YEAR
-				print 'AQUIIIII'
-				print self.serie_tipo[0:3]
-				print self.serie_tipo[0:3] + self.process_number + "-" + format(datetime.now(),"%Y")
 				self.process_number = self.serie_tipo[0:3] + self.process_number + "-" + format(datetime.now(),"%Y")
 			else:
 				self.process_number = make_autoname(self.serie_tipo)[0:len(self.serie_tipo)-1] + self.process_number
@@ -56,7 +53,7 @@ class FichadeProcesso(Document):
 
 			else:
 				if (self.serie_tipo == "ASTXXXX-"):
-					print 'passou'
+					pass
 				elif len(self.process_number) != ((len(self.serie_tipo)-1)+4):
 					msgprint('Numero de Processo tem que ter somente 4 digitos')
 					self.process_number =None
@@ -66,9 +63,6 @@ class FichadeProcesso(Document):
 			frappe.show('Numero de Processo nao pode ser 0000')
 			self.process_number = None
 			frappe.validated = False
-
-
-		print "tamanho ", len(self.servicos_processo)
 		
 		if len(self.servicos_processo) == 0:
 			validation = False
@@ -80,8 +74,7 @@ class FichadeProcesso(Document):
 		#elif self.servicos_processo[0].servico_ficha_processo == None:
 		#	validation = False
 		#	frappe.msgprint("Inserir pelo menos um Servico", raise_exception = 1)
-		if self.docstatus == 1 and self.status_process == 'Aberto' or self.status_process == 'Em Curso'  :
-			print " criarProjeto ", self.status_process
+		if self.docstatus == 1 and self.status_process == 'Aberto' or self.status_process == 'Em Curso':
 			self.status_process = 'Em Curso'
 			self.criar_projecto()
 			self.criar_salesorder()		
@@ -92,14 +85,10 @@ class FichadeProcesso(Document):
 
 
 	def criar_projecto(self):
-
-		print "Verifica o Project ...."
 		criarprojeto = False
 		if frappe.db.sql("""select name from `tabProject` WHERE name =%s """,(self.name), as_dict=False) ==():
 			criarprojeto = True
-		if criarprojeto == True: 
-			print "Criar Projeto ...."
-
+		if criarprojeto == True:
 			projecto = frappe.get_doc({
 				"doctype": "Project",
 				"project_name": self.name,
@@ -122,8 +111,6 @@ class FichadeProcesso(Document):
 			for num_servicos in frappe.get_all("Servicos_Ficha_Processo",filters={'Parent':self.name},fields=['Parent','servico_ficha_processo','descricao_ficha_processo']):
 #frappe.get_all("Servicos_Ficha_Processo",filters=[["Parent","like",self.process_number + "%"]],fields=["Parent","servico_ficha_processo","descricao_ficha_processo"]):
 
-
-				print "Criar Tarefas...."
 				if num_servicos.servico_ficha_processo:
 		#			for num_avarias in fo_avarias:
 					tarefas = frappe.get_doc({
@@ -142,14 +129,10 @@ class FichadeProcesso(Document):
 
 
 	def criar_salesorder(self):
-
-		print "Verifica a Sale ...."
 		criarprojeto = False
 		if frappe.db.sql("""select name from `tabSales Order` WHERE name =%s """,(self.name), as_dict=False) ==():
 			criarprojeto = True
-		if criarprojeto == True: 
-			print "Criar Sales Order ...."
-
+		if criarprojeto == True:
 			projecto = frappe.get_doc({
 				"doctype": "Sales Order",
 				"delivery_date": get_datetime(frappe.utils.now()) + timedelta(days=2) ,
@@ -174,21 +157,16 @@ class FichadeProcesso(Document):
 
 @frappe.whitelist()
 def get_projecto_status(prj):
-	print frappe.db.sql("""select name, status from `tabProject` WHERE status = 'Completed' and name =%s """,(prj), as_dict=False)
 	return frappe.db.sql("""select name,status from `tabProject` WHERE name =%s """,(prj), as_dict=False)
 
 
 @frappe.whitelist()
 def get_projecto_status_completed():
-	print frappe.db.sql("""select name, status from `tabProject` WHERE status = 'Completed' """, as_dict=False)
 	return frappe.db.sql("""select name from `tabProject` WHERE status = 'Completed' """, as_dict=False)
 
 
 @frappe.whitelist()
 def set_ficha_closed(ficha):
-	print 'Fechar a Ficha de Processo'	
-	fecharficha = frappe.get_doc("Ficha de Processo", ficha)
-
 	frappe.db.sql("""update `tabFicha de Processo` set status_process = 'Fechado' where name = %s """,ficha, as_dict=False)
 
 

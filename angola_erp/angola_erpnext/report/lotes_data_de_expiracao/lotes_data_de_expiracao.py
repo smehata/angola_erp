@@ -23,7 +23,6 @@ def execute(filters=None):
 			for batch in sorted(iwb_map[item][wh]):
 				qty_dict = iwb_map[item][wh][batch]
 				if int(qty_dict.expiry_status) <= int(exp_dias):
-					print 'Dentro do Exp Dias '
 					data.append([item, item_map[item]["item_name"], item_map[item]["description"], wh, batch,
 						frappe.db.get_value('Batch', batch, 'expiry_date'), qty_dict.expiry_status
 					])

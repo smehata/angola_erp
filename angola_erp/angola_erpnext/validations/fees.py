@@ -20,11 +20,6 @@ from frappe.utils import encode
 
 def validate(doc,method):
 	doc.calculate_total()
-	print "propinas"
-	print doc.docstatus
-	
-	print doc.referente_ao_mes.encode('utf-8') 
-	print "MES ", _(frappe.utils.datetime.datetime.now().strftime("%B"))
 
 	if not doc.referente_ao_mes:
 		#acrescenta o mes corrente ....
@@ -44,16 +39,14 @@ def validate(doc,method):
 		# doc.referente_ao_mes = doc.referente_ao_mes[int(frappe.utils.formatdate(frappe.utils.nowdate(),'M'))]
 
 	if doc.docstatus == 1 and doc.outstanding_amount > 0:
+		pass
 
 		#Por enquanto nao cria a Factura ...
-		print "Por enquanto nao cria a Factura ..."
 		#criar_faturavenda(doc)
 
 
 def criar_faturavenda(doc):
 	if doc.outstanding_amount > 0:
-		print "Verifica Sales Invoice ...."
-		print frappe.get_value("Global Defaults",None,"default_company")
 		empresa = frappe.get_value("Global Defaults",None,"default_company")
 		empresa_abbr = frappe.get_value("Company",empresa,"abbr")
 
@@ -75,22 +68,8 @@ def criar_faturavenda(doc):
 		criarprojeto = False
 		if frappe.db.sql("""select name from `tabSales Invoice` WHERE propina =%s """,(doc.name), as_dict=False) ==():
 			criarprojeto = True
-		if criarprojeto == True: 
-			print "Criar Sales Invoice ...."
-			print doc.components[0].fees_category.encode('utf-8')
-			print type(doc.components[0].amount)
+		if criarprojeto == True:
 			valor = flt(doc.components[0].amount)
-			print type(valor) #doc.round_floats_in(valor)
-
-			print doc.name
-			print doc.student_name.encode('utf-8')
-			print doc.referente_ao_mes
-			print centrocusto
-			print contalucro.encode('utf-8')
-			print contadespesas.encode('utf-8')
-			print armazemdefault
-			print acc
-			print valor
 
 			projecto = frappe.get_doc({
 				"doctype": "Sales Invoice",

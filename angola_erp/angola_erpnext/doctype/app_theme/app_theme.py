@@ -14,9 +14,6 @@ class AppTheme(Document):
 		self.validate_colors()
 
 	def on_update(self):
-		print 'on update'
-		#print self.custom
-		print frappe.local.conf.get('developer_mode')
 		print (frappe.flags.in_import or frappe.flags.in_test)
 
 		#if (not self.custom
@@ -36,9 +33,7 @@ class AppTheme(Document):
 		if self.is_standard_and_not_valid_user():
 			frappe.throw(_("You are not allowed to delete a standard Website Theme"),
 				frappe.PermissionError)
-		print 'Apagar tambem o CSS'
 		file1 = './assets/angola_erp/css/erpnext/' + self.username + '_bootstrap.css'
-		print file1
 		os.remove(file1)
 
 
@@ -54,7 +49,6 @@ class AppTheme(Document):
 
 	def export_doc(self):
 		"""Export to CSS file under 'assets/angola_erp/css/erpnext/' + frappe.session.user + '_bootstrap.css' """
-		print ('export doc')
 		""" 
 			body {
 			  font-family: "Helvetica Neue", Helvetica, Arial, "Open Sans", sans-serif;
@@ -64,8 +58,6 @@ class AppTheme(Document):
 			  background-color: #ff5858;
 			}
 		"""
-		print self.css
-		print self.background_color
 
 		body_css =' body { font-family: "Helvetica Neue", Helvetica, Arial, "Open Sans", sans-serif; font-size: ' + self.font_size + '; line-height: 1.42857143; color: #36414c; background-color: ' + self.background_color + ';}'
 			
@@ -74,14 +66,8 @@ class AppTheme(Document):
 		#novo_css = self.css + '\n' + body_css
 		novo_css = body_css
 
-		print ('novo css ',novo_css)
-	
-		print 'body css'
-		print body_css
-
 		#Cria o file ...even if exists overwrite it..
 		file1 = './assets/angola_erp/css/erpnext/' + self.username + '_bootstrap.css' #?ver=1510070115.0'
-		print file1
 		f = open(file1,'w')
 		f.write(novo_css)
 		f.close()

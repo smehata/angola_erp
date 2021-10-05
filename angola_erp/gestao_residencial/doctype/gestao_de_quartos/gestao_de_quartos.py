@@ -22,8 +22,7 @@ from erpnext.controllers.stock_controller import StockController #get_items_and_
 
 #from erpnext.controllers.selling_controller import update_stock_ledger
 #import erpnext.controllers.selling_controller
-
-
+from idna import unicode
 
 form_grid_templates = {
 	"items": "templates/form_grid/gestao_quartos_list.html"
@@ -45,9 +44,6 @@ class GestaodeQuartos(StockController):
 	def validate(self):
 
 		super(GestaodeQuartos, self).validate()
-		print "DOC STATUS"
-		print self.name
-		print self.docstatus
 		self.Validar_Numero_Dias()
 		self.Check_ContaCorrente()
 		self.Sethoras_Quarto()
@@ -84,15 +80,6 @@ class GestaodeQuartos(StockController):
 		self.Reservas_Status()
 
 	def before_save(self):
-		print ("ANTES DE SALVAR")
-		print ("ANTES DE SALVAR")
-		print ("ANTES DE SALVAR")
-		print ("ANTES DE SALVAR")
-		print ("ANTES DE SALVAR")
-		print ("ANTES DE SALVAR")
-		print ("ANTES DE SALVAR")
-		print ("ANTES DE SALVAR")
-		print ("ANTES DE SALVAR")
 
 #		frappe.throw ("Doc Status ", self.docstatus == 0)
 		if (self.total_servicos == 0) or (self.total_servicos != 0):
@@ -110,8 +97,6 @@ class GestaodeQuartos(StockController):
 
 	def on_submit(self):
 		#Deve submer para fazer pagamento ??????
-		print ("SUBMETER PAGAMENTO")
-		print ("servico pago por ", self.servico_pago_por)
 
 		if self.servico_pago_por:
 			for d in self.get('servicos'):
@@ -302,19 +287,13 @@ class GestaodeQuartos(StockController):
 		elif self.hora_diaria_noite == "Hora":
 			self.hora_saida = get_datetime(self.hora_entrada) + timedelta(hours=self.horas)
 
-		print "DEPOIS DE CALCULAR"
-		print self.hora_saida
-
 
 	def Contas_Correntes(self):
 				#aproveita criar ja o registo no Conta-correntes
 		if (self.conta_corrente !="nome do cliente") and (self.conta_corrente !=None) and (self.status_quarto == "Fechado") and (self.conta_corrente_status == "Não Pago") :
 			if (frappe.db.sql("""select cc_nome_cliente from `tabContas Correntes` WHERE cc_nome_cliente =%s """,self.conta_corrente, as_dict=False)) != ():
 				#existe faz os calculos da divida
-				print " CLIENTE JA EXISTE"
 				ccorrente = frappe.get_doc("Contas Correntes", self.conta_corrente)
-				print "CLIENTE"
-				print ccorrente.name
 
 				totalextra = 0
 
@@ -342,17 +321,11 @@ class GestaodeQuartos(StockController):
 				#ccorrente.save()
 
 			else:
-				#novo
-				print " CLIENTE NAO EXISTE"
-				print self.conta_corrente
 				ccorrente = frappe.new_doc("Contas Correntes")
 				ccorrente.cc_nome_cliente = self.conta_corrente
 				ccorrente.name = self.conta_corrente
 				ccorrente.cc_status_conta_corrente = "Não Pago"
 				ccorrente.insert()
-
-				print "CONTAS CORRENTES FEITA !!!!!!"
-
 				totalextra = 0
 
 				cc_detalhes = frappe.new_doc("CC_detalhes")
@@ -535,7 +508,8 @@ class GestaodeQuartos(StockController):
 
 			cancel = True if sl_entries[0].get("is_cancelled") == "Yes" else False
 			if cancel:
-				set_as_cancel(sl_entries[0].get('voucher_no'), sl_entries[0].get('voucher_type'))
+				pass
+				# set_as_cancel(sl_entries[0].get('voucher_no'), sl_entries[0].get('voucher_type'))
 
 			for sle in sl_entries:
 				sle_id = None
@@ -556,7 +530,8 @@ class GestaodeQuartos(StockController):
 				update_bin(args, allow_negative_stock, via_landed_cost_voucher)
 
 			if cancel:
-				delete_cancelled_entry(sl_entries[0].get('voucher_type'), sl_entries[0].get('voucher_no'))
+				pass
+				# delete_cancelled_entry(sl_entries[0].get('voucher_type'), sl_entries[0].get('voucher_no'))
 
 	def make_entry(self,args, allow_negative_stock=False, via_landed_cost_voucher=False):
 		print ("inicio make Entry")
@@ -820,13 +795,7 @@ def quartos_reservados():
 
 @frappe.whitelist()
 def atualiza_ccorrente(cliente,recibo):
-
-	print cliente
-	print recibo
 	for ccorrente1 in frappe.db.sql("""SELECT name,numero_registo,parent,status_conta_corrente from `tabCC_detalhes` where numero_registo = %s and parent = %s """, (recibo,cliente), as_dict=True):
-		print ccorrente1.name
-		print "CAMPOS !!!!!"
-
 		reset_idx = frappe.get_doc("CC_detalhes",ccorrente1.name)
 		reset_idx.status_conta_corrente = "Pago"
 		reset_idx.save()
@@ -834,13 +803,15 @@ def atualiza_ccorrente(cliente,recibo):
 
 @frappe.whitelist()
 def debit_to_acc(company):
-	print frappe.db.sql("""select name from `tabAccount` where account_type='Receivable' and is_group=0 and company = %s """,company, as_dict=False)
 	return frappe.db.sql("""select name from `tabAccount` where account_type='Receivable' and is_group=0 and company = %s """,company, as_dict=False)
 
 
+def alert(param):
+	pass
+
 
 @frappe.whitelist()
-def get_perfil_pos():
+def get_perfil_pos(doc):
 
 	pos_profile = get_pos_profile(doc.company) or {}
 	if not pos_profile:

@@ -13,7 +13,6 @@ from frappe.utils import comma_and
 def validate(doc,method):
 	if doc.student:
 		#Cartao numero no Student...
-		print 'Program Enrollment - Validate - Add Cartao Numero'
 		student = frappe.get_doc('Student',doc.student)
 		student.cartao_numero = doc.cartao_numero
 		student.save()

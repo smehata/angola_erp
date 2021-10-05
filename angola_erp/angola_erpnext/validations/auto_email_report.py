@@ -57,10 +57,6 @@ class AutoEmailReport(Document):
 			self.filters = json.loads(self.filters) if self.filters else {}
 			self.filters['modified'] = ('>', frappe.utils.now_datetime() - timedelta(hours=self.data_modified_till))
 
-		print 'AUTO EMAIL REPORT - GET REPORT CONTENT'
-		print self.name
-		print self.filters
-
 		columns, data = report.get_data(limit=self.no_of_rows or 100, user = self.user,
 			filters = self.filters, as_dict=True)
 
@@ -167,19 +163,14 @@ def send_now(name):
 	auto_email_report = frappe.get_doc('Auto Email Report', name)
 	auto_email_report.check_permission()
 	#HELKYds
-	print name
-	print auto_email_report.filters
-	filtros = json.loads(auto_email_report.filters or '{}')	
-	print filtros['from_date']
+	filtros = json.loads(auto_email_report.filters or '{}')
 	if (not filtros['from_date']):
+		pass
 		#Nao tem data
-		print 'Nao TEM DATAs!!!'
 	elif (filtros['from_date'] != frappe.utils.nowdate() and name == 'Registo de Vendas'):
 		data_ini = {"from_date":frappe.utils.nowdate()}
 		data_fim = {"to_date":frappe.utils.nowdate()}
 		filtros.update({"from_date":frappe.utils.nowdate(), "to_date":frappe.utils.nowdate()})
-		print 'dentro do registo vendas'
-		print filtros
 		auto_email_report.filters = json.dumps(filtros)
 		auto_email_report.save()
 

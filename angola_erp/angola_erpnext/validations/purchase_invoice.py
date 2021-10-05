@@ -41,10 +41,6 @@ def validate(doc,method):
 
 	percentagem = 0
 	msg_item = []
-	
-	#Taxa de Cambio
-	print "SALES ORDER CAMBIO"	
-	print taxavenda[1]	
 	if (taxavenda[1] !=0 and doc.taxa_cambio == 0):
 		doc.taxa_cambio = taxavenda[1]
 				
@@ -139,7 +135,7 @@ def validate(doc,method):
 							if prod[0].imposto_de_consumo == 1:
 
 								if aii.imposto_de_consumo == 0:
-									print ""
+									pass
 								
 								if aii.retencao_na_fonte == 1:
 										
@@ -177,23 +173,13 @@ def validate(doc,method):
 						ai.charge_type = "Actual"
 						ai.tax_amount = despesas
 			elif "34220000" in ai.account_head: #IVA
-				print "TEM IVA......"
-				print "TEM IVA......"
-				print "TEM IVA......"
-				print "TEM IVA......"
+				pass
 
 			else:
-				print "SEM DESPESAS MAS CALCULA IPC"
-				print "SEM DESPESAS MAS CALCULA IPC"
 				ai.charge_type = "Actual"
 				ai.tax_amount = totalgeralimpostoconsumo
 
-
-
-	print "VALOR POR EXTENSO"
-
 	company_currency = erpnext.get_company_currency(doc.company)
-	print company_currency
 	if (company_currency =='KZ'):
 		doc.in_words = num2words(doc.grand_total, lang='pt_BR').title()	+ ' Kwanzas.'
 	else:

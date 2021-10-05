@@ -14,7 +14,6 @@ from frappe.model.document import Document
 
 import sys
 # reload(sys)
-sys.setdefaultencoding('utf8')
 
 def validate_receiver_nos(receiver_list):
 	validated_receiver_list = []

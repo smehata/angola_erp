@@ -18,9 +18,6 @@ from angola_erp.angola_erpnext.validations.sms_settings import send_sms
 
 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
-
 
 @frappe.whitelist()
 def aoa_sms_numbers():
@@ -60,7 +57,6 @@ def aoa_sms_numbers():
 	ficheiro = '/tmp/numeros_sms.txt'
 	lerficheiro = open (ficheiro,'r')
 	for line in lerficheiro:
-		print 'Enviando para ',line;
 		send_sms(line,sms_txt,'angolaerp')
 
 

@@ -33,11 +33,8 @@ def execute(filters=None):
 
 #		print 'ver colunas'
 		outros_abonos = 0
-		print earning_types
 		for e in earning_types:
 			row.append(ss_earning_map.get(ss.name, {}).get(e))
-			print 'earning type ', e
-			print 	ss_earning_map.get(ss.name, {}).get(e)
 			if (ss_earning_map.get(ss.name, {}).get(e) != None and e !='Salario Base'):
 				outros_abonos += ss_earning_map.get(ss.name, {}).get(e)
 
@@ -73,13 +70,9 @@ def get_columns(salary_slips):
 		from `tabSalary Detail` sd, `tabSalary Component` sc
 		where sc.name=sd.salary_component and sd.amount != 0 and sd.parent in (%s) order by sd.idx, sd.abbr """ %
 		(', '.join(['%s']*len(salary_slips))), tuple([d.name for d in salary_slips]), as_dict=1):
-		print 'COMPONENT SALAR'
-		print component.salary_component.encode('utf-8')
 		salary_components[_(component.type)].append(component.salary_component)
 		salary_components1[_(component.type)].append(component.salary_component_abbr)
 
-	print salary_components
-	print salary_components1
 #	for e in salary_components[_("Earning")]:
 #		print frappe.db.get_value('Salary Component',{'name':e},'salary_component_abbr' if e !='Salario Base' else 'salary_component')
 
@@ -90,17 +83,9 @@ def get_columns(salary_slips):
 		[_("Outros Descontos") + ":Currency:120"] + \
 		[_("Total Deduction") + ":Currency:120", _("Net Pay") + ":Currency:120"]
 
-	print 'COLUNAS'	
-	print columns
-	print columns[3][1]
-
 	return columns, salary_components[_("Earning")], salary_components[_("Deduction")]
 
 def get_salary_slips(filters):
-	print "DATAS"
-	print filters.get("date_range")[0]
-	print filters.get("date_range")[1]
-
 	filters.update({"from_date": filters.get("date_range")[0], "to_date":filters.get("date_range")[1]})
 	conditions, filters = get_conditions(filters)
 	salary_slips = frappe.db.sql("""select * from `tabSalary Slip` where docstatus = 1 and salario_iliquido !=0 %s

@@ -28,12 +28,10 @@ class FolhadeObras(Document):
 
 	def criar_projecto(self):
 		if self.fo_status == "Em Curso":
-			print "Verifica o Project ...."
 			criarprojeto = False
 			if frappe.db.sql("""select name from `tabProject` WHERE name =%s """,(self.numero_obra), as_dict=False) ==():
 				criarprojeto = True
-			if criarprojeto == True: #not frappe.get_doc("Project",self.numero_obra): 
-				print "Criar Projeto ...."
+			if criarprojeto == True: #not frappe.get_doc("Project",self.numero_obra):
 				projecto = frappe.get_doc({
 					"doctype": "Project",
 					"project_name": self.numero_obra,
@@ -92,8 +90,7 @@ class FolhadeObras(Document):
 	def _criar_projecto(self):
 			i=0
 			d=self.avarias_cliente
-			print unicode(d).encode('utf-8')
-			while i <> -1:
+			while i != -1:
 				posic = d.find(';\n', i,len(d)+1)
 				if posic != -1:
 					palavratmp = d[0:posic]
@@ -104,36 +101,31 @@ class FolhadeObras(Document):
 				else:
 					palavratmp= d
 					i =-1
-				print posic, unicode(dd).encode('utf-8')
-				print i, unicode(d).encode('utf-8')
 				if palavratmp !='':
 					tarefas = frappe.get_doc({
 						"doctype": "Task",
 						"project": self.numero_obra,
-						"subject": unicode(palavratmp), #.encode('utf-8'),
+						"subject": "dddddd",
+						# "subject": unicode(palavratmp), #.encode('utf-8'),
 						"status": "Open",
 						"description": "Tarefa adicionada pelo Sistema",
 						"exp_start_date": get_datetime(frappe.utils.now()) + timedelta(days=1)
 
 					})
 					tarefas.insert()
-					frappe.msgprint('{0}{1}'.format(unicode(palavratmp), " Criada como tarefa no Projecto ", self.numero_obra))
+					# frappe.msgprint('{0}{1}'.format(unicode(palavratmp), " Criada como tarefa no Projecto ", self.numero_obra))
 			
 
 @frappe.whitelist()
 def get_projecto_status(prj):
-	print frappe.db.sql("""select name, status from `tabProject` WHERE status = 'Completed' and name =%s """,(prj), as_dict=False)
 	return frappe.db.sql("""select status from `tabProject` WHERE name =%s """,(prj), as_dict=False)
 
 @frappe.whitelist()
 def get_avaria_cliente(cdt):
-	print frappe.get_all("Avarias_Cliente",filters={'Parent':cdt},fields=['Parent','avcliente_descricao'])	
 	return frappe.get_all("Avarias_Cliente",filters={'Parent':cdt},fields=['Parent','avcliente_descricao'])
 
 @frappe.whitelist()
 def get_avarias_clientes():
-	print "GET_AVARIAS_CLIENTE"
-	print frappe.get_all("Avarias_Cliente",filters={'Parent':['!=','']},fields=['Parent','avcliente_descricao'])
 	return frappe.get_all("Avarias_Cliente",filters={'Parent':['!=','']},fields=['Parent','avcliente_descricao'])
 
 

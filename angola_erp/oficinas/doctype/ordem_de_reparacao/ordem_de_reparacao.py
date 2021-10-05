@@ -19,7 +19,6 @@ class OrdemdeReparacao(Document):
 	
 
 	def validate(self):
-		print "tamanho ", len(self.or_avarias_corrigir)
 		
 		if self.or_avarias_corrigir[0].avcliente_descricao == None:
 			validation = False

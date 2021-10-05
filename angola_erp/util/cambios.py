@@ -37,8 +37,6 @@ def cambios(fonte):
 	#if no cambio on currency exchange continues otherwise use the already exchange rate
 	temcambio = frappe.db.sql(""" select name,from_currency,to_currency,date,exchange_rate from `tabCurrency Exchange` where to_currency='kz' and from_currency='USD' and date=(select max(date) from `tabCurrency Exchange`) ;""",as_dict=True)
 
-	print "Cambios - Cambios"
-	print temcambio == []
 	#print temcambio[0]['exchange_rate']
 	if not temcambio == []:
 		if not temcambio[0]['exchange_rate'] == None :
@@ -49,7 +47,7 @@ def cambios(fonte):
 	if fonte.upper() == 'BNA':
 		try:
 			page=requests.get('http://www.bna.ao/Servicos/cambios_table.aspx?idl=1')
-		except Exception, e:
+		except Exception as e:
 			if frappe.message_log: frappe.message_log.pop()
 			return 0,0
 
@@ -62,7 +60,6 @@ def cambios(fonte):
 				#print tree.xpath('//tr['+ str(i) + ']') == []
 
 				if tree.xpath('//tr['+ str(i) + ']') != []:
-					print "meoda ", tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0]
 					#print tr.xpath(tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0].strip()) == '  USD'
 					if tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0] == 'USD': 
 						moeda= tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0]     #moeda USD
@@ -75,17 +72,12 @@ def cambios(fonte):
 						else:
 							moedavenda = 0
 					i += 1
-
-			print moeda
-			print moedacompra
-			print moedavenda
-			
 			return moedacompra, moedavenda
 	
 	if fonte.upper() == 'BIC':
 		try:
 			page=requests.get('http://www.bancobic.ao/Servicos/Cambios/Cambios.aspx?ctype=D')
-		except Exception, e:
+		except Exception as e:
 			if frappe.message_log: frappe.message_log.pop()
 			return 0,0
 
@@ -98,24 +90,19 @@ def cambios(fonte):
 				#print tree.xpath('//tr['+ str(i) + ']') == []
 
 				if tree.xpath('//tr['+ str(i) + ']') != []:
-					print "meoda ", tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0]
 					#print tr.xpath(tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0].strip()) == '  USD'
 					if tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0] == 'USD': 
 						moeda= tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0]     #moeda USD
 						moedacompra= tr.xpath('//tr['+ str(i) +']/td[2]/text()')[0]	#Compra
 						moedavenda= tr.xpath('//tr['+ str(i) +']/td[3]/text()')[0]    #Venda
 					i += 1
-
-			print moeda
-			print moedacompra
-			print moedavenda
 			
 			return moedacompra, moedavenda
 
 	if fonte.upper() == 'BFA':
 		try:
 			page= requests.get('http://www.bfa.ao/Servicos/Cambios/Divisas.aspx?idl=1')
-		except Exception, e:
+		except Exception as e:
 			if frappe.message_log: frappe.message_log.pop()
 			return 0,0
 
@@ -155,14 +142,6 @@ def cambios(fonte):
 							print ("venda")
 				
 				i +=1
-				print ("=============")	
-
-
-
-			print moeda
-			print moedacompra
-			print moedavenda
-
 			return moedacompraUSD, moedavendaUSD
 
 
@@ -178,9 +157,6 @@ def atualizar_cambios():
 	diahoje = datetime.datetime.today()
 	
 	if (qnd_correrfonte == 'BNA') or (qnd_correrfonte == 'BFA') or (qnd_correrfonte == 'BIC'):
-		print qnd_correrfonte, " selecionando"
-		print qnd_correr
-		print qnd_correrdia
 		if qnd_correr == 'Todos os Dias':
 			#executa o update
 			mensagem = update_cambios(qnd_correrfonte)
@@ -210,42 +186,38 @@ def update_cambios(fonte):
 	if fonte.upper() == 'BNA':
 		bna_bfa=0
 		try:
-			print "BNA sites !!!"
 			page=requests.get('http://www.bna.ao/Servicos/cambios_table.aspx?idl=1')
 			if page.status_code == 200:
 				tree = html.fromstring(page.content)
 
-		except Exception, e:
+		except Exception as e:
 			if frappe.message_log: frappe.message_log.pop()
 			return 0,0
 
 	if fonte.upper() == 'BFA':
 		bna_bfa=1
 		try:
-			print "BFA sites !!!"
 			page= requests.get('http://www.bfa.ao/Servicos/Cambios/Divisas.aspx?idl=1')
 			if page.status_code == 200:
 				tree = html.fromstring(page.content)
 
-		except Exception, e:
+		except Exception as e:
 			if frappe.message_log: frappe.message_log.pop()
 			return 0,0
 
 	if fonte.upper() == 'BIC':
 		bna_bfa=2
 		try:
-			print "BIC sites !!!"
 			page= requests.get('http://www.bancobic.ao/Servicos/Cambios/Cambios.aspx?ctype=D')
 			if page.status_code == 200:
 				tree = html.fromstring(page.content)
 
-		except Exception, e:
+		except Exception as e:
 			if frappe.message_log: frappe.message_log.pop()
 			return 0,0
 
 
-	#Espera resposta de dos dois sites...	
-	print "Ja tem resposta dos sites !!!"	
+	#Espera resposta de dos dois sites...
 	if tree is not None: #page.status_code == 200:
 		#tree = html.fromstring(page.content)
 
@@ -254,21 +226,16 @@ def update_cambios(fonte):
 		bic_i = 2
 	
 		if bna_bfa==0:
-			print "Banco para Cambiais BNA" 
 			fontecambio = "BNA"
-		elif bna_bfa ==1: 
-
-			print "Banco para Cambiais BFA" 
+		elif bna_bfa ==1:
 			fontecambio = "BFA"
 		else:
-			print "Banco para Cambiais BIC" 
 			fontecambio = "BIC"
 
 		for tr in tree.xpath("//tr"):
 			#BNA
 			if bna_bfa==0:
 				if tree.xpath('//tr['+ str(bna_i) + ']') != []:
-					print "moeda BNA ", tr.xpath('//tr['+ str(bna_i) +']/td[1]/text()')[0]
 
 					moeda= tr.xpath('//tr['+ str(bna_i) +']/td[1]/text()')[0]     #moeda 
 
@@ -288,7 +255,6 @@ def update_cambios(fonte):
 			#BIC
 			if bna_bfa==2:
 				if tree.xpath('//tr['+ str(bic_i) + ']') != []:
-					print "moeda BIC ", tr.xpath('//tr['+ str(bic_i) +']/td[1]/text()')[0]
 					moeda= tr.xpath('//tr['+ str(bic_i) +']/td[1]/text()')[0]     #moeda 
 					if (tree.xpath('//tr['+ str(bic_i) +']/td[2]/text()') != []):
 						moedacompra= tr.xpath('//tr['+ str(bic_i) +']/td[2]/text()')[0]	#Compra
@@ -308,12 +274,10 @@ def update_cambios(fonte):
 				moedacompra =0
 				moedavenda = 0
 				for tt in tr.xpath('//tr['+ str(bfa_i) +']//*[@headers]/text()'):
-					print 'BFA'
 					print (tt.strip())
 					if tt.strip()== 'USD':
 						moeda = tt.strip()
 					elif moeda== "":
-						print 'nao tem nada'
 						moeda = tt.strip()
 					else:
 						#Compra e Venda
@@ -332,35 +296,23 @@ def update_cambios(fonte):
 
 							print ("venda")
 				
-				bfa_i +=1
-			print ("DONE =============")	
-				
+				bfa_i += 1
 			#Geral
 
 			cambios_ = frappe.db.sql(""" select name,from_currency,to_currency,max(date),exchange_rate from `tabCurrency Exchange` where to_currency='kz' and from_currency=%s ;""",(moeda),as_dict=True)
-
-			print "moeda ", moeda
-			print cambios_[0]['max(date)']
-			print formatdate(get_datetime_str(frappe.utils.nowdate()),"YYY-MM-dd")
-			print formatdate(cambios_[0]['max(date)'],"YYYY-MM-dd") == formatdate(get_datetime_str(frappe.utils.nowdate()),"YYY-MM-dd")
-
 
 			if type(moedavenda) ==str:
 				#BFA uses , instead of .
 				moedavenda = moedavenda.replace(",",".")
 				moedavenda = float(moedavenda)
 			elif moedacompra ==0 and moedavenda == 0:
-				#BIC or others with ,	
-				print moedacompraUSD
-				print moedavendaUSD
+				#BIC or others with ,
 				moedavenda = moedavendaUSD
 				moedacompra = moedacompraUSD
-				print moedavenda, moedacompra
-				print type(moedavenda)	
 				moedavenda = moedavenda.replace(",",".")
 			else:
+				pass
 				#something else
-				print 'what to do !!!'	
 
 			if (cambios_[0].to_currency != None):
 	#						print "NAO Tem cambios "
@@ -368,18 +320,13 @@ def update_cambios(fonte):
 	#					if (len(cambios_) >0):
 				if formatdate(cambios_[0]['max(date)'],"YYYY-MM-dd") == formatdate(get_datetime_str(frappe.utils.nowdate()),"YYY-MM-dd"):
 				#if (cambios_[-0].date == frappe.utils.nowdate()):
-					print "Ja foi atualizado hoje ...."
 					mensagemretorno= moeda + " Nao tem atualizacao hoje .... " + '\r' + '\n ' + mensagemretorno
 
 				else:
-					print "Tem cambios ", cambios_
 					#Just add or should check if value changed...!!!
-
+					pass
 					for reg in cambios_:
-						print " cambio ", reg.exchange_rate
-						print " cambio ", moedavenda
-						if (reg.exchange_rate <> moedavenda):	
-							print "Cambios diferentes...."
+						if (reg.exchange_rate != moedavenda):
 							#add new record
 							cambios_novo = frappe.get_doc({
 								"doctype": "Currency Exchange",
@@ -387,7 +334,7 @@ def update_cambios(fonte):
 								"to_currency": "KZ",
 								"exchange_rate": moedavenda,
 								"date": frappe.utils.nowdate()
-								
+
 								
 
 	#										"name":'{0}-{1}-{2}'.format(formatdate(get_datetime_str(frappe.utils.nowdate()), "yyyy-MM-dd"),"USD", "KZ")
@@ -427,14 +374,14 @@ def update_cambios_(fonte):
 	if fonte.upper() == 'BNA':
 		try:
 			page=requests.get('http://www.bna.ao/Servicos/cambios_table.aspx?idl=1')
-		except Exception, e:
+		except Exception as e:
 			if frappe.message_log: frappe.message_log.pop()
 			return 0,0
 
 	if fonte.upper() == 'BFA':
 		try:
 			page= requests.get('http://www.bfa.ao/Servicos/Cambios/Divisas.aspx?idl=1')
-		except Exception, e:
+		except Exception as e:
 			if frappe.message_log: frappe.message_log.pop()
 			return 0,0
 
@@ -449,7 +396,6 @@ def update_cambios_(fonte):
 				#print tree.xpath('//tr['+ str(i) + ']') == []
 
 				if tree.xpath('//tr['+ str(i) + ']') != []:
-					print "meoda BNA ", tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0]
 					#print tr.xpath(tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0].strip()) == '  USD'
 
 					moeda= tr.xpath('//tr['+ str(i) +']/td[1]/text()')[0]     #moeda 
@@ -458,25 +404,18 @@ def update_cambios_(fonte):
 
 					cambios_ = frappe.db.sql(""" select name,from_currency,to_currency,max(date),exchange_rate from `tabCurrency Exchange` where to_currency='kz' and from_currency=%s ;""",(moeda),as_dict=True)
 
-					print "moeda ", moeda
-					print cambios_[0]['max(date)']
-					print formatdate(get_datetime_str(frappe.utils.nowdate()),"YYY-MM-dd")
-					print formatdate(cambios_[0]['max(date)'],"YYYY-MM-dd") == formatdate(get_datetime_str(frappe.utils.nowdate()),"YYY-MM-dd")
 					if (cambios_[0].to_currency != None):
 #						print "NAO Tem cambios "
 
 #					if (len(cambios_) >0):
 						if formatdate(cambios_[0]['max(date)'],"YYYY-MM-dd") == formatdate(get_datetime_str(frappe.utils.nowdate()),"YYY-MM-dd"):
-						#if (cambios_[-0].date == frappe.utils.nowdate()):
-							print "Ja foi atualizado hoje ...."
+							#if (cambios_[-0].date == frappe.utils.nowdate()):
+							pass
 						else:
-							print "Tem cambios ", cambios_
 							#Just add or should check if value changed...!!!
 
 							for reg in cambios_:
-								print " cambio ", reg.exchange_rate
-								if (reg.exchange_rate <> moedavenda):	
-									print "Cambios diferentes...."
+								if (reg.exchange_rate != moedavenda):
 									#add new record
 									cambios_novo = frappe.get_doc({
 										"doctype": "Currency Exchange",
@@ -498,10 +437,6 @@ def update_cambios_(fonte):
 						moedacompra= tr.xpath('//tr['+ str(i) +']/td[2]/text()')[0]	#Compra
 						moedavenda= tr.xpath('//tr['+ str(i) +']/td[3]/text()')[0]    #Venda
 					i += 1
-
-			print moeda
-			print moedacompra
-			print moedavenda
 			
 	#			return moedacompra, moedavenda
 	
@@ -542,16 +477,6 @@ def update_cambios_(fonte):
 							print ("venda")
 				
 				i +=1
-				print ("=============")	
-
-
-
-			print moeda
-			print moedacompra
-			print moedavenda
-			print "Actualizacao na tabela ainda por implementar ....."
-
-#			return moedacompra, moedavenda
 
 
 @frappe.whitelist()

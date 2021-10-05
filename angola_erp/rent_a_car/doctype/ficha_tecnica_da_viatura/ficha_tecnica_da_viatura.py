@@ -146,14 +146,7 @@ class FichaTecnicadaViatura(Document):
 		self.criar_carro_lastmile()
 
 	def criar_carro_lastmile(self):
-
-		print "Criar o lastmile do carro ...."
-		print(self.entrada_ou_saida_viatura)
-		print(self.kms_saida)
-		print(self.kms_entrada)
-		
 		if self.entrada_ou_saida_viatura == "Entrada":
-
 			car_lastmile = frappe.get_doc({
 				"doctype": "Vehicle_lastmile",
 				"matricula": self.matricula_veiculo,

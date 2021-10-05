@@ -27,7 +27,6 @@
 import os
 import sys
 import socket
-import ConfigParser
 
 #Note: if you set up additional managers through FreePBX, change this to manager_additional.conf !
 mgrcnf = '/etc/asterisk/manager.conf'
@@ -58,85 +57,73 @@ class acli:
                 self.password = 'angola'
 
         def sendCmd(self,action,paraquem,**args):
-		print action
-		if action =="login":
-			print "no login"
-			self.sock.send("Action: %s\r\n" % action)
-		else:
-			if paraquem == "Quarto":
-				self.sock.send("Action: Originate\r\n")
-				self.sock.send("Channel: SIP/%s\r\n" % action)
-				self.sock.send("Exten: 100\r\n")
-				self.sock.send("Application: Playback\r\n")
-				self.sock.send("Data: custom/TempoTerminou\r\n")
-				self.sock.send("CallerID: 100\r\n")
-			else:
-				#recepcao
-				self.sock.send("Action: Originate\r\n")
-				self.sock.send("Channel: SIP/%s\r\n" % action)
-				self.sock.send("Exten: 100\r\n")
-				self.sock.send("Application: Playback\r\n")
-				self.sock.send("Data: custom/QuartoTempoTerminou\r\n")
-				self.sock.send("CallerID: 100\r\n")
+            if action =="login":
+                self.sock.send("Action: %s\r\n" % action)
+            else:
+                if paraquem == "Quarto":
+                    self.sock.send("Action: Originate\r\n")
+                    self.sock.send("Channel: SIP/%s\r\n" % action)
+                    self.sock.send("Exten: 100\r\n")
+                    self.sock.send("Application: Playback\r\n")
+                    self.sock.send("Data: custom/TempoTerminou\r\n")
+                    self.sock.send("CallerID: 100\r\n")
+                else:
+                    #recepcao
+                    self.sock.send("Action: Originate\r\n")
+                    self.sock.send("Channel: SIP/%s\r\n" % action)
+                    self.sock.send("Exten: 100\r\n")
+                    self.sock.send("Application: Playback\r\n")
+                    self.sock.send("Data: custom/QuartoTempoTerminou\r\n")
+                    self.sock.send("CallerID: 100\r\n")
 
 
-                for key, value in args.items():
-                        self.sock.send("%s: %s\r\n" % (key,value))
-                self.sock.send("\r\n")
-                data = []
-                while '\r\n\r\n' not in ''.join(data)[-4:]:
-                        buf = self.sock.recv(1)
-                        data.append(buf)
-                l = ''.join(data).split('\r\n')
-                return l
+                    for key, value in args.items():
+                            self.sock.send("%s: %s\r\n" % (key,value))
+                    self.sock.send("\r\n")
+                    data = []
+                    while '\r\n\r\n' not in ''.join(data)[-4:]:
+                            buf = self.sock.recv(1)
+                            data.append(buf)
+                    l = ''.join(data).split('\r\n')
+                    return l
 
 
         def conn(self):
                 self.sock.connect((self.serverip, self.serverport))
                 #need Events OFF with the login else event text pollutes our command response
                 ret = self.sendCmd("login","Quarto", Username=self.username, Secret=self.password, Events="OFF")
-                print "Connect response: ", ret
                 if 'Response: Success' in ret:
-                        print 'Connected.'
-                        return True
+                    return True
                 else:
-                        print "Connect failed!"
-                        callCavalry(value['Message'], 'api call')
-                        return False
+                        # callCavalry(value['Message'], 'api call')
+                    return False
 
 
 def callCavalry( mesg, doing ):
         #put your action here
-        print 'Ouch!', mesg, doing
         return True
 
 def main(paraquem,extensao):
-        ast = acli()
-        ast.username = username
-        ast.password = password
-	print "usuario ", username
-        if ast.conn():
-        	if paraquem == "Quarto":
-			dev = ast.sendCmd(extensao,"Quarto")
-		else:
-			#Recepcao
-			dev = ast.sendCmd(extensao,"Rececao")
-		
-                print "Command response1: ", dev
-                value = make_dict(dev)
-                if value['Response'] == 'Success':
-                        #print "Status = #", value['Status'], "#"
-                        #don't test only for "OK" here, some return longer strings with ping time etc
-                        if 'OK' in value['Status']:
-                                print 'OK: trunk is up.'
-                                pass
-                        else:
-                                callCavalry(value['Status'], 'peer myvoiptrunkname')
-                else:
-                        callCavalry(value['Message'], 'api call')
+    ast = acli()
+    ast.username = username
+    ast.password = password
+    if ast.conn():
+        if paraquem == "Quarto":
+            dev = ast.sendCmd(extensao,"Quarto")
+    else:
+        dev = ast.sendCmd(extensao,"Rececao")
+        value = make_dict(dev)
+        if value['Response'] == 'Success':
+            #print "Status = #", value['Status'], "#"
+            #don't test only for "OK" here, some return longer strings with ping time etc
+            if 'OK' in value['Status']:
+                pass
+            else:
+                callCavalry(value['Status'], 'peer myvoiptrunkname')
+        else:
+            callCavalry(value['Message'], 'api call')
 
-        return 0
+    return 0
 
-if __name__ == '__main__': 
-	#main(sys.argv[2:2])
-	main(sys.argv[1],sys.argv[2])
+if __name__ == '__main__':
+    main(sys.argv[1],sys.argv[2])

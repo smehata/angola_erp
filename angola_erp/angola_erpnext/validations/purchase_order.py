@@ -18,7 +18,7 @@ from datetime import datetime
 
 from subprocess import Popen, PIPE
 
-import angola_erp.util.saft_ao
+# import angola_erp.util.saft_ao
 
 ####
 # Helkyd modified 24-04-2019
@@ -27,11 +27,7 @@ import angola_erp.util.saft_ao
 ultimoreghash = None
 
 def validate(doc,method):
-
-	print "VALOR POR EXTENSO"
-
 	company_currency = erpnext.get_company_currency(doc.company)
-	print company_currency
 	if (company_currency =='KZ'):
 		doc.in_words = num2words(doc.grand_total, lang='pt_BR').title()	+ ' Kwanzas.'
 	else:
@@ -39,8 +35,7 @@ def validate(doc,method):
 
 	
 	ultimodoc = frappe.db.sql(""" select max(name),creation,docstatus,hash_erp,hashcontrol_erp from `tabPurchase Order` where (docstatus = 1 or docstatus = 2)  and hash_erp <> '' """,as_dict=True)
-	print 'VALIDARrrrrrrrrrrrrrrrrrr'
-	print ultimodoc
+
 	global ultimoreghash
 	ultimoreghash = ultimodoc
 
@@ -51,11 +46,7 @@ def before_submit(doc, method):
 	fileregisto = "registo"
 	fileregistocontador = 1	#sera sempre aqui 
 
-	#get the last doc generated 
-	print 'verifica se ja tem o registo'
-	print 'verifica se ja tem o registo' 
-	print ultimoreghash
-
+	#get the last doc generated
 	if ultimoreghash:
 		ultimodoc = ultimoreghash
 	else:
@@ -65,20 +56,12 @@ def before_submit(doc, method):
 
 
 	criado = datetime.strptime(doc.creation,'%Y-%m-%d %H:%M:%S.%f').strftime("%Y-%m-%dT%H:%M:%S") 
-	
-	print 'ULTIMO HASH.....'
-	print ultimodoc
+
 #	print ultimodoc[0].hash_erp
 	if ultimodoc[0].hash_erp == "" or ultimodoc[0].hash_erp == None:
 		#1st record
-		print 'primeiro registo HASH'
-		#print doc.posting_date.strftime("%Y-%m-%d")
-
-		print doc.creation	
-		print criado
 		hashinfo = str(doc.transaction_date) + ";" + str(criado) + ";" + str(doc.name) + ";" + str(doc.grand_total) + ";"
 	else:
-		print 'segundo registo'
 		#print chaveanterior
 		hashinfo = str(doc.transaction_date)  + ";" + str(criado) + ";" + str(doc.name) + ";" + str(doc.grand_total) + ";" + str(ultimodoc[0].hash_erp)
 
@@ -88,18 +71,12 @@ def before_submit(doc, method):
 
 	#to generate the HASH
 #	angola_erp.util.saft_ao.assinar_ssl()
-	print "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-#	os.system("/usr/bin/python /tmp/angolaerp.cert2/assinar_ssl.py")	
-	print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-	print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-	print angola_erp.util.saft_ao.assinar_ssl1(hashinfo)
 	 
 
 #	p = Popen(["/frappe-bench/apps/angola_erp/angola_erp/util/hash_ao_erp.sh"],shell=True, stdout=PIPE, stderr=PIPE)
 #	p = Popen(["exec ~/frappe-bench/apps/angola_erp/angola_erp/util/hash_ao_erp.sh"],shell=True, stdout=PIPE, stderr=PIPE)
 #	output, errors = p.communicate()
 #	p.wait()
-	print 'Openssl Signing...'
 #	print output
 #	print errors
 
@@ -110,16 +87,16 @@ def before_submit(doc, method):
 #	print 'Hash criado'
 #	chaveanterior = str(hashcriado.read())	#para usar no next record...
 
-	doc.hash_erp = str(angola_erp.util.saft_ao.assinar_ssl1(hashinfo))	#Hash created
+	# doc.hash_erp = str(angola_erp.util.saft_ao.assinar_ssl1(hashinfo))	#Hash created
 	
 #	hashcriado.close()
 	
 	#Deve no fim apagar todos os regis* criados ....
 #	os.system("rm /tmp/registo* ")	#execute
 
-def old_valiedat():
+def old_valiedat(doc,method=None):
 	for d in doc.items:
-		if doc.is_subcontracting <> 1:
+		if doc.is_subcontracting != 1:
 			if d.subcontracted_item:
 				frappe.throw(("Subcontracted Item only allowed for Sub Contracting PO. \
 					Check Row# {0}. This PO is Not a Subcontracting PO check the box to \
@@ -127,16 +104,16 @@ def old_valiedat():
 	for d in doc.items:
 		item = frappe.get_doc("Item", d.item_code)
 		if doc.is_subcontracting == 1:
-			if item.is_sub_contracted_item <> 1:
+			if item.is_sub_contracted_item != 1:
 				frappe.throw(("Only Sub Contracted Items are allowed in Item Code for \
 					Sub Contracting PO. Check Row # {0}").format(d.idx))
 		else:
-			if item.is_purchase_item <> 1:
+			if item.is_purchase_item != 1:
 				frappe.throw(("Only Purchase Items are allowed in Item Code for \
 					Purchase Orders. Check Row # {0}").format(d.idx))
 		if d.so_detail:
 			sod = frappe.get_doc("Sales Order Item", d.so_detail)
-			if doc.is_subcontracting <> 1:
+			if doc.is_subcontracting != 1:
 				d.item_code = sod.item_code
 			else:
 				d.subcontracted_item = sod.item_code

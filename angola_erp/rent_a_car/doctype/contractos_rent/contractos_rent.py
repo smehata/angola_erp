@@ -13,7 +13,7 @@ from frappe.model.naming import make_autoname
 from datetime import datetime, timedelta
 from frappe.utils import cstr, get_datetime, getdate, cint, get_datetime_str
 
-from angola_erp.util.angola import get_dominios_activos
+# from angola_erp.util.angola import get_dominios_activos
 
 class ContractosRent(Document):
 
@@ -109,8 +109,6 @@ class ContractosRent(Document):
 
 def criar_faturavenda(doc):
 
-	print "Verifica Sales Invoice ...."
-	print frappe.get_value("Global Defaults",None,"default_company")
 	
 	#if NONE should ask to select or select the first one....
 	#or maybe on the form should have the company to select....
@@ -138,8 +136,7 @@ def criar_faturavenda(doc):
 
 	criarprojeto = True
 
-	if criarprojeto == True: 
-		print "Criar Sales Invoice ...."
+	if criarprojeto == True:
 		#print doc.components[0].fees_category.encode('utf-8')
 		#print type(doc.components[0].amount)
 
@@ -149,22 +146,12 @@ def criar_faturavenda(doc):
 
 		#print type(valor) #doc.round_floats_in(valor)
 
-		print doc.name
-		print doc.nome_do_cliente.encode('utf-8')
-		print centrocusto
-		print contalucro.encode('utf-8')
-		print contadespesas.encode('utf-8')
-
-		print armazemdefault
-		print acc
-		print valor
-
-		tem_Educa = get_dominios_activos()
+		# tem_Educa = get_dominios_activos()
 		tem_educacao = False
-		for x in tem_Educa:
-			print(x.domain)
-			if x.domain == 'Education':
-				tem_educacao = True
+		# for x in tem_Educa:
+		# 	print(x.domain)
+		# 	if x.domain == 'Education':
+		# 		tem_educacao = True
 
 
 		sales_invoice = frappe.new_doc("Sales Invoice")
@@ -195,10 +182,7 @@ def criar_faturavenda(doc):
 
 
 
-def criar_adiantamento_caucao(doc):
-
-	print "Verifica Journal Entry ...."
-	print frappe.get_value("Global Defaults",None,"default_company")
+def criar_adiantamento_caucao(doc, self=None):
 	
 	#if NONE should ask to select or select the first one....
 	#or maybe on the form should have the company to select....
@@ -225,18 +209,6 @@ def criar_adiantamento_caucao(doc):
 	#if frappe.db.sql("""select name from `tabSales Invoice` WHERE propina =%s """,(doc.name), as_dict=False) ==():
 
 	criarprojeto = True
-
-
-	print doc.name
-	print doc.nome_do_cliente.encode('utf-8')
-	print centrocusto
-	print contalucro.encode('utf-8')
-	print contadespesas.encode('utf-8')
-
-	print armazemdefault
-	print acc
-	print valor
-
 
 
 	journal_entry = frappe.new_doc("Journal Entry")

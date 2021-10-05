@@ -14,10 +14,6 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 	if not filters: filters = frappe._dict({})
 
 	invoice_list = get_invoices(filters, additional_query_columns)
-
-	print 'Invoice List'
-	print invoice_list
-	print additional_query_columns
 	columns = get_columns(invoice_list, additional_table_columns)
 
 	if not invoice_list:

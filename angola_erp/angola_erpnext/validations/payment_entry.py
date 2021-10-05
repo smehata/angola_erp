@@ -15,16 +15,8 @@ from erpnext.accounts.doctype.journal_entry.journal_entry import get_default_ban
 from erpnext.setup.utils import get_exchange_rate
 from erpnext.accounts.general_ledger import make_gl_entries
 from erpnext.hr.doctype.expense_claim.expense_claim import update_reimbursed_amount
-from erpnext.controllers.accounts_controller import AccountsController
 
-
-import angola_erp
-from angola_erp.util.cambios import cambios
-from angola_erp.util.angola import get_lista_retencoes
-from angola_erp.util.angola import get_taxa_retencao
-from angola_erp.util.angola import get_taxa_ipc
-
-from angola_erp.util.angola import cancel_gl_entry_fee
+# from angola_erp.util.angola import cancel_gl_entry_fee
 
 def setup_party_account_field(doc):
 	doc.party_account_field = None
@@ -44,16 +36,10 @@ def setup_party_account_field(doc):
 
 
 def validate(doc,method):
-	print "VALIDAR PAGAMENTO !!!!"
-	print "VALIDAR PAGAMENTO !!!!"
-	print "VALIDAR PAGAMENTO !!!!"
-	print "VALIDAR PAGAMENTO !!!!"
+	pass
 
 def on_submit(doc,method):
-	print 'ENTRADA PAGAMENTO  - NO SUBMIT '
-	print 'ENTRADA PAGAMENTO  - NO SUBMIT '
-	print 'ENTRADA PAGAMENTO  - NO SUBMIT '
-
+	pass
 
 	#++++++++++ FEEs
 	#Cancel GL 
@@ -67,16 +53,11 @@ def on_submit(doc,method):
 				tem_Educacao = True;
 
 	if tem_Educacao:
-		print "TEM DOMINIO EDUCACAO SELECT"
-		print "TEM DOMINIO EDUCACAO SELECT"
 		for refs in doc.get("references"):
-			print refs.reference_name
 			if refs.parenttype == "Sales Invoice":
 				factura = frappe.get_doc("Sales Invoice", refs.reference_name)
-				print factura
 				for prop in factura.get("propina"):
-					print prop.propina
-					cancel_gl_entry_fee(prop.propina)
+					# cancel_gl_entry_fee(prop.propina)
 
 					#Agora clear outstanding from Fees	
 					frappe.db.set_value("Fees",prop.propina, "paid_amount", prop.valor)
@@ -84,7 +65,6 @@ def on_submit(doc,method):
 					frappe.db.commit()
 			elif refs.reference_doctype == "Fees":
 				propina = frappe.get_doc("Fees", refs.reference_name)
-				print propina.name
 
 				#Agora clear outstanding from Fees	
 				frappe.db.set_value("Fees",propina.name, "paid_amount", refs.allocated_amount)
@@ -188,17 +168,12 @@ def make_gl_entries1(doc, cancel=0, adv_adj=0):
 	for d in doc.get("references"):
 		if d.reference_doctype in ("Sales Invoice"):
 			tempIPC = frappe.get_doc(d.reference_doctype, d.reference_name)
-			print "Sales Invoice - TEMPIPC"
-			print tempIPC.name
-			print tempIPC.taxes_and_charges
 			if tempIPC.taxes_and_charges:
 				#check if IPC or IVA
 				global valor_IPC
 				global valor_IVA
-				print doc.name
-				print tempIPC.taxes_and_charges
 				taxasencs = frappe.db.sql(""" select * from `tabSales Taxes and Charges` where parent = %s""",(doc.name),as_dict=True)
-				print taxasencs
+
 				for taxaenc in taxasencs:
 					if "3422" in taxaenc.account_head:
 						#IVA
@@ -210,28 +185,16 @@ def make_gl_entries1(doc, cancel=0, adv_adj=0):
 						calculaIPC = True
 
 	if calculaIPC and doc.party_type != _("Employee"):
-		print "IPC EMPLOYEE"
 		add_party_gl_entries1(doc, gl_entries)
 		add_bank_gl_entries1(doc, gl_entries)
 
 	if doc.party_type != _("Supplier") and doc.party_type != _("Employee") and doc.party_type != "Supplier":
-		print "II EMPLOYEE"
-		#Verify if isencao
-		print retencoes_is[0].isencao
-		print retencoes_is[0].descricao
-		print retencoes_is[0].data_limite
-		
-
 		if retencoes_is[0].isencao == 0:
 			# 3471 (C) IPC to 7531 (D)
 			#IS always
 			add_party_gl_entries2(doc, gl_entries)
 			add_bank_gl_entries2(doc, gl_entries)
 		elif retencoes_is[0].isencao == 1  and retencoes_is[0].data_limite.strftime("%Y-%m-%d") < frappe.utils.nowdate():
-			print "expirou pode processar"
-			print "expirou pode processar"
-			# 3471 (C) IPC to 7531 (D)
-			#IS always
 			add_party_gl_entries2(doc, gl_entries)
 			add_bank_gl_entries2(doc, gl_entries)
 
@@ -242,20 +205,12 @@ def make_gl_entries1(doc, cancel=0, adv_adj=0):
 		if retencoes_ii[0].isencao == 0:
 			#somente if retencoes_is[0].isencao == 1
 			if retencoes_is[0].isencao == 1 and retencoes_is[0].data_limite.strftime("%Y-%m-%d") > frappe.utils.nowdate():
-				print "IMPOSTO INDUSTRIAL"
-				print "IMPOSTO INDUSTRIAL"
-				print "IMPOSTO INDUSTRIAL"
-				print "IMPOSTO INDUSTRIAL"
 				add_party_gl_entries3(doc, gl_entries)
 				add_bank_gl_entries3(doc, gl_entries)
 
 
 	#doc.add_deductions_gl_entries(gl_entries)
 	#add_deductions_gl_entries(doc, gl_entries)
-
-	print "make_gl_entries"
-	print "make_gl_entries"
-	print "make_gl_entries"
 	print(gl_entries)
 	make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
 
@@ -284,13 +239,7 @@ def update_expense_claim(doc):
 
 def add_party_gl_entries1(doc, gl_entries):
 	#Modificado para incluir IPC 3771 para 3421
-
-	print "VERIFICA SE TEM IPC TEMP"
-	print "VERIFICA SE TEM IPC TEMP"
 	if ipc_temp:
-		print "TEM IPC TEMP"
-		print "TEM IPC TEMP"
-		print "TEM IPC TEMP"
 
 		#if doc.payment_type=="Receive":
 		#	against_account = doc.paid_to
@@ -318,13 +267,9 @@ def add_party_gl_entries1(doc, gl_entries):
 #				"against_voucher_type": d.reference_doctype,
 #				"against_voucher": d.reference_name
 #			})
-			print "IPC "
 			tempIPC = frappe.get_doc(d.reference_doctype, d.reference_name)
-			print tempIPC.total_taxes_and_charges
 			if tempIPC.total_taxes_and_charges:	#<>0
 				if d.outstanding_amount == 0:
-					print "POE O IPC"
-					print tempIPC.total_taxes_and_charges
 	#				valor_IPC = tempIPC.total_taxes_and_charges
 	#				print valor_IPC
 					print (flt(tempIPC.total_taxes_and_charges) * flt(d.exchange_rate),doc.precision("paid_amount"))
@@ -377,10 +322,6 @@ def add_bank_gl_entries1(doc, gl_entries):
 	#		})
 	#	)
 
-	print "add_bank_gl_entries1"
-	print "BANK GL"
-	print "BANK GL"
-	print valor_IPC
 
 	if doc.payment_type in ("Receive", "Internal Transfer"):
 		gl_entries.append(
@@ -395,17 +336,9 @@ def add_bank_gl_entries1(doc, gl_entries):
 
 #Imposto de Selo
 def add_party_gl_entries2(doc, gl_entries):
-
-	print "add_party_gl_entries2"
-	print "VERIFICA SE TEM IS TEMP"
-	print "VERIFICA SE TEM IS TEMP"
 	centro_custo = frappe.get_value("Company",doc.company,"cost_center")
 
 	if is_temp:
-		print "TEM IS TEMP"
-		print "TEM IS TEMP"
-		print "TEM IS TEMP"
-		print centro_custo
 		#if doc.payment_type=="Receive":
 		#	against_account = doc.paid_to
 		#else:
@@ -429,17 +362,12 @@ def add_party_gl_entries2(doc, gl_entries):
 	
 		#References for Sales Invoice or Fees
 		for d in doc.get("references"):
+			pass
 #			gle = party_gl_dict.copy()
 #			gle.update({
 #				"against_voucher_type": d.reference_doctype,
 #				"against_voucher": d.reference_name
-#			})
-			print "IPC "
-			print "valor Pago ", doc.paid_amount
-			print doc.received_amount
-			print (flt(flt(d.allocated_amount) * flt(d.exchange_rate),doc.precision("paid_amount")) * retencoes_is[0].percentagem) / 100
-			print (flt(flt(doc.paid_amount) * flt(d.exchange_rate),doc.precision("paid_amount")) * retencoes_is[0].percentagem) / 100
-			allocated_amount_in_company_currency = (flt(flt(doc.paid_amount) * flt(d.exchange_rate),doc.precision("paid_amount")) * retencoes_is[0].percentagem) / 100
+#			})			allocated_amount_in_company_currency = (flt(flt(doc.paid_amount) * flt(d.exchange_rate),doc.precision("paid_amount")) * retencoes_is[0].percentagem) / 100
 			#allocated_amount_in_company_currency += (flt(flt(d.allocated_amount) * flt(d.exchange_rate),doc.precision("paid_amount")) * retencoes_is[0].percentagem) / 100
 
 		
@@ -464,7 +392,6 @@ def add_party_gl_entries2(doc, gl_entries):
 #			gl_entries.append(gle)
 
 def add_bank_gl_entries2(doc, gl_entries):
-	print "ADD BANK GL ENTRIES 2"
 	centro_custo = frappe.get_value("Company",doc.company,"cost_center")
 
 	#if doc.payment_type in ("Pay", "Internal Transfer"):
@@ -492,23 +419,9 @@ def add_bank_gl_entries2(doc, gl_entries):
 
 #Imposto Industrial
 def add_party_gl_entries3(doc, gl_entries):
-
-	print "add_party_gl_entries3"
-	print "VERIFICA SE TEM IIndustrial TEMP"
-	print "VERIFICA SE TEM IIndustrial TEMP"
 	centro_custo = frappe.get_value("Company",doc.company,"cost_center")
 
 	if ii_temp:
-		print "TEM IIndustrial TEMP"
-		print "TEM IIndustrial TEMP"
-		print "TEM IIndustrial TEMP"
-
-		#if doc.payment_type=="Receive":
-		#	against_account = doc.paid_to
-		#else:
-		#	against_account = doc.paid_from
-
-
 		party_gl_dict = doc.get_gl_dict({
 			"account": ii_[0].name,
 			#"party_type": doc.party_type,
@@ -529,11 +442,6 @@ def add_party_gl_entries3(doc, gl_entries):
 #				"against_voucher_type": d.reference_doctype,
 #				"against_voucher": d.reference_name
 #			})
-			print "IPC "
-			print "valor Pago ", doc.paid_amount
-			print doc.received_amount
-			print (flt(flt(d.allocated_amount) * flt(d.exchange_rate),doc.precision("paid_amount")) * retencoes_ii[0].percentagem) / 100
-			print (flt(flt(doc.paid_amount) * flt(d.exchange_rate),doc.precision("paid_amount")) * retencoes_ii[0].percentagem) / 100
 			allocated_amount_in_company_currency = (flt(flt(doc.paid_amount) * flt(d.exchange_rate),doc.precision("paid_amount")) * retencoes_ii[0].percentagem) / 100
 			#allocated_amount_in_company_currency += (flt(flt(d.allocated_amount) * flt(d.exchange_rate),doc.precision("paid_amount")) * retencoes_is[0].percentagem) / 100
 
@@ -558,7 +466,6 @@ def add_party_gl_entries3(doc, gl_entries):
 #			gl_entries.append(gle)
 
 def add_bank_gl_entries3(doc, gl_entries):
-	print "ADD BANK GL ENTRIES 3...."
 	centro_custo = frappe.get_value("Company",doc.company,"cost_center")
 
 	#if doc.payment_type in ("Pay", "Internal Transfer"):
@@ -584,11 +491,6 @@ def add_bank_gl_entries3(doc, gl_entries):
 		)
 
 def add_deductions_gl_entries(doc, gl_entries):
-
-	print "add_deductions_gl_entries"
-	print "add_deductions_gl_entries"
-	print "add_deductions_gl_entries"
-
 	for d in doc.get("deductions"):
 		if d.amount:
 			account_currency = get_account_currency(d.account)

@@ -78,12 +78,10 @@ class CadastrodeProcesso(Document):
 
 	def criar_projecto(self):
 		if self.estado == "Em Curso":
-			print "Verifica o Project ...."
 			criarprojeto = False
 			if frappe.db.sql("""select name from `tabProject` WHERE name =%s """,(self.numero_de_processo), as_dict=False) ==():
 				criarprojeto = True
-			if criarprojeto == True: #not frappe.get_doc("Project",self.numero_obra): 
-				print "Criar Projeto ...."
+			if criarprojeto == True: #not frappe.get_doc("Project",self.numero_obra):
 				projecto = frappe.get_doc({
 					"doctype": "Project",
 					"project_name": self.numero_de_processo,
@@ -117,6 +115,5 @@ class CadastrodeProcesso(Document):
 
 @frappe.whitelist()
 def get_projecto_status(prj):
-	print frappe.db.sql("""select name, status from `tabProject` WHERE status = 'Completed' and name =%s """,(prj), as_dict=False)
 	return frappe.db.sql("""select status from `tabProject` WHERE name =%s """,(prj), as_dict=False)
 

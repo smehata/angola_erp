@@ -40,8 +40,7 @@ def validate(doc,method):
 				pass
 	'''
 	ultimodoc = frappe.db.sql(""" select max(name),creation,docstatus,hash_erp,hashcontrol_erp from `tabDelivery Note` where (docstatus = 1 or docstatus = 2)  and hash_erp <> '' """,as_dict=True)
-	print 'VALIDARrrrrrrrrrrrrrrrrrr'
-	print ultimodoc
+
 	global ultimoreghash
 	ultimoreghash = ultimodoc
 	
@@ -52,11 +51,7 @@ def before_submit(doc, method):
 	fileregisto = "registo"
 	fileregistocontador = 1	#sera sempre aqui 
 
-	#get the last doc generated 
-	print 'verifica se ja tem o registo'
-	print 'verifica se ja tem o registo' 
-	print ultimoreghash
-
+	#get the last doc generated
 	if ultimoreghash:
 		ultimodoc = ultimoreghash
 	else:
@@ -66,41 +61,26 @@ def before_submit(doc, method):
 
 
 	criado = datetime.strptime(doc.creation,'%Y-%m-%d %H:%M:%S.%f').strftime("%Y-%m-%dT%H:%M:%S") 
-	
-	print 'ULTIMO HASH.....'
-	print ultimodoc
+
 #	print ultimodoc[0].hash_erp
 	if ultimodoc[0].hash_erp == "" or ultimodoc[0].hash_erp == None:
 		#1st record
-		print 'primeiro registo HASH'
 		#print doc.posting_date.strftime("%Y-%m-%d")
 
-		print doc.creation	
-		print criado
 		hashinfo = str(doc.posting_date) + ";" + str(criado) + ";" + str(doc.name) + ";" + str(doc.rounded_total) + ";"
 	else:
-		print 'segundo registo'
 		#print chaveanterior
 		hashinfo = str(doc.posting_date)  + ";" + str(criado) + ";" + str(doc.name) + ";" + str(doc.rounded_total) + ";" + str(ultimodoc[0].hash_erp)
 
 
 #	hashfile = open("/tmp/" + str(fileregisto) + str(fileregistocontador) + ".txt","wb")
 #	hashfile.write(hashinfo)
-
-	#to generate the HASH
-#	angola_erp.util.saft_ao.assinar_ssl()
-	print "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-#	os.system("/usr/bin/python /tmp/angolaerp.cert2/assinar_ssl.py")	
-	print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-	print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-	print angola_erp.util.saft_ao.assinar_ssl1(hashinfo)
 	 
 
 #	p = Popen(["/frappe-bench/apps/angola_erp/angola_erp/util/hash_ao_erp.sh"],shell=True, stdout=PIPE, stderr=PIPE)
 #	p = Popen(["exec ~/frappe-bench/apps/angola_erp/angola_erp/util/hash_ao_erp.sh"],shell=True, stdout=PIPE, stderr=PIPE)
 #	output, errors = p.communicate()
 #	p.wait()
-	print 'Openssl Signing...'
 #	print output
 #	print errors
 

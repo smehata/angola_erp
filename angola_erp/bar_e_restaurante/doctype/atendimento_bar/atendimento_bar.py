@@ -22,9 +22,9 @@ class AtendimentoBar(Document):
 
 	def validate(self):
 
-        	if self.get('__islocal'):
-				pass
-           		# print "LOCAL"
+		if self.get('__islocal'):
+			pass
+			# print "LOCAL"
        
 		elif (self.pagamento_por == "Conta-Corrente"):
 			if (self.conta_corrente =="") or (self.conta_corrente == "nome do cliente"):

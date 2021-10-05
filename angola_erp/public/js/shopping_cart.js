@@ -12,8 +12,8 @@ frappe.ready(function() {
 	}
 
 	// update login
-	shopping_cart.show_shoppingcart_dropdown();
-	shopping_cart.set_cart_count();
+//	shopping_cart.show_shoppingcart_dropdown();
+//	shopping_cart.set_cart_count();
 	shopping_cart.bind_dropdown_cart_buttons();
 });
 
@@ -50,7 +50,7 @@ $.extend(shopping_cart, {
 				},
 				btn: opts.btn,
 				callback: function(r) {
-					shopping_cart.set_cart_count();
+//					shopping_cart.set_cart_count();
 					if (r.message.shopping_cart_menu) {
 						$('.shopping-cart-menu').html(r.message.shopping_cart_menu);
 					}

@@ -9,8 +9,6 @@ from frappe.utils import cstr, flt, getdate
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 
 class ContasCorrentes(Document):
@@ -26,18 +24,11 @@ def ordem_idx(cliente):
 	for t in frappe.db.sql(""" SELECT idx,name,parent,status_conta_corrente from tabCC_detalhes where parent =%s ORDER BY status_conta_corrente ASC  """,cliente,as_dict=True):
 #		print t.parent
 		reset_idx = frappe.get_doc("CC_detalhes",t.name)
-		print "ORDENAR IDX"
-		print reset_idx.name
-		print reset_idx.parent
-		print reset_idx.idx
-		print reset_idx.numero_registo
 
 
 		reset_idx.idx = numero
 		numero = numero + 1
 		reset_idx.save()
-		print "Numero"
-		print numero
 
 
 @frappe.whitelist()
@@ -45,35 +36,27 @@ def set_bar_restaurante_cc():
 
 #	for clientes in frappe.db.sql("""SELECT name, cliente_tipo from tabCLIENTES where cliente_tipo ='Membro' """,as_dict=True):
 	for clientes in frappe.db.sql("""SELECT name from tabCustomer  """,as_dict=True):
-		print "Cliente ", clientes.name
 		#Cria o Cliente no CONTAS_CORRENTES ....as already exists records...
 		
 		if (frappe.db.sql("""select cc_nome_cliente from `tabContas Correntes` WHERE cc_nome_cliente =%s """,clientes.name, as_dict=False)) == ():
-			print " CLIENTE NAO EXISTE"
-			print clientes.name
+
 			ccorrente = frappe.new_doc("Contas Correntes")
 			ccorrente.cc_nome_cliente = clientes.name
 			ccorrente.name = clientes.name
 			ccorrente.cc_status_conta_corrente = "Não Pago"
 			ccorrente.insert()
-
-			print "CONTAS CORRENTES FEITA !!!!!!"		
 		get_bar_restaurante_cc(clientes.name)
 
 
 @frappe.whitelist()
 def get_bar_restaurante_cc(cliente):
-	print "cliente BAR ",cliente
 
 	for cc in frappe.db.sql("""select name,status_atendimento,conta_corrente,conta_corrente_status,total_servicos,hora_atendimento from `tabAtendimento Bar` where conta_corrente = %s """,cliente,as_dict=True):
-		print cc.name
-		print 	
+
 		ccdetalhes = frappe.db.get_value("CC_detalhes",cc.name,"numero_registo")
 
 		if ccdetalhes:
 			#Registo existe
-			print "registo ", ccdetalhes
-			print "REGISTO BAR EXISTE"
 			totalextra = 0
 			cc_detalhes = frappe.get_doc("CC_detalhes",ccdetalhes)	
 
@@ -88,19 +71,13 @@ def get_bar_restaurante_cc(cliente):
 			cc_detalhes.save()
 
 		else:
-			#Nao exist	
-			print "REGISTO BAR NAO EXISTE"
+			#Nao exist
 			totalextra = 0
 
 			cc_detalhes = frappe.new_doc("CC_detalhes")
 			cc_detalhes.parent = cliente
 			cc_detalhes.parentfield = "cc_table_detalhes"
 			cc_detalhes.parenttype = "Contas Correntes"
-					
-			print "cc nome", cc.name
-			print "status ", str(cc.conta_corrente_status)
-			print "valor ", cc.total_servicos
-			print "hora ", cc.hora_atendimento
 
 			cc_detalhes.descricao_servico = cc.name
 
@@ -127,18 +104,11 @@ def get_bar_restaurante_cc(cliente):
 
 @frappe.whitelist()
 def get_quartos_cc(cliente):
-	print "cliente QUARTOS ",cliente
-
-
 	for cc in frappe.db.sql("""select name,status_quarto,conta_corrente,conta_corrente_status,total,total_servicos,hora_entrada from `tabGestao de Quartos` where conta_corrente = %s and status_quarto='Fechado' """,cliente,as_dict=True):
-		print cc.name
-		print 	
 		ccdetalhes = frappe.db.get_value("CC_detalhes",cc.name,"numero_registo")
 
 		if ccdetalhes:
 			#Registo existe
-			print "registo ", ccdetalhes
-			print "REGISTO QUARTO EXISTE"
 			totalextra = 0
 			cc_detalhes = frappe.get_doc("CC_detalhes",ccdetalhes)	
 
@@ -157,20 +127,12 @@ def get_quartos_cc(cliente):
 			cc_detalhes.save()
 
 		else:
-			#Nao exist
-		
-			print "REGISTO QUARTO NAO EXISTE"
 			totalextra = 0
 
 			cc_detalhes = frappe.new_doc("CC_detalhes")
 			cc_detalhes.parent = cliente
 			cc_detalhes.parentfield = "cc_table_detalhes"
 			cc_detalhes.parenttype = "Contas Correntes"
-					
-			print "cc nome", cc.name
-			print "status ", str(cc.conta_corrente_status)
-			print "valor ", cc.total_servicos
-			print "hora ", cc.hora_entrada
 
 			cc_detalhes.descricao_servico = cc.name
 
@@ -205,23 +167,14 @@ def set_bar_cc(cliente):
 
 @frappe.whitelist()
 def set_bar_quartos_cc(cliente):
-	print "+++++++++++++++++++++++"
-	print "+++++++++++++++++++++++"
-	print "+++++++++++++++++++++++"
-	print "CONTA cliente PAGAR ",cliente
-
-
 	for client in frappe.db.sql("""SELECT name,parent,numero_registo,descricao_servico,status_conta_corrente,cc_tipo from tabCC_detalhes where parent = %s """,cliente,as_dict=True):
 
-		print "registo ", client.name
 		if client.cc_tipo == "Bar":
-			print "pagar Bar"
 			bar = frappe.get_doc("Atendimento Bar",client.name)
 			bar.conta_corrente_status = "Pago"
 			bar.save()
 
 		elif client.cc_tipo == "Quarto":
-			print "pagar Quarto"
 			quarto = frappe.get_doc("Gestao de Quartos",client.name)
 			quarto.conta_corrente_status = "Pago"
 			quarto.save()

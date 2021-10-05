@@ -274,16 +274,8 @@ def send_token_via_sms(otpsecret, token=None, phone_no=None):
 	args = {
 		'Your verification code is {}'.format(hotp.at(int(token)))
 	}
-
-	print 'args 1'
-	print args
-
 	for d in ss.get("parameters"):
 		args[d.parameter] = d.value
-
-	print 'receiver parameter'
-	print ss.receiver_parameter
-
 #	args[ss.receiver_parameter] = phone_no
 
 	sms_args = {
@@ -293,32 +285,22 @@ def send_token_via_sms(otpsecret, token=None, phone_no=None):
 
 	# http://10.192.8.104/cgi/WebCGI?11401=account=admin&password=helio&port=1&destination=
 	if phone_no[0:3] !=244:
-		print phone_no[0:3]
 		d = '244' + phone_no
-		print d
 		phone_no = d
 
 	paraquem = phone_no #arg.get('receiver_list')[0]
 	paraquem += "&content="
 	paraquem += str(args)
-	print "PARA QUEM"
-	print paraquem
 #	print ss.message_parameter
-	print ss.sms_gateway_url + paraquem
 
 	sms_args = {
 		'params': "",
 		'gateway_url': ss.sms_gateway_url + paraquem
 	}
-
-	print ' args'
-	print args
-	print sms_args
 #	print sms_args[gateway_url]
 
 
-	enqueue(method=send_request, queue='short', timeout=300, event=None,
-		async=True, job_name=None, now=False, **sms_args)
+	enqueue(method=send_request, queue='short', timeout=300, event=None, job_name=None, now=False, **sms_args)
 	return True
 
 def send_token_via_email(user, token, otp_secret, otp_issuer, subject=None, message=None):
@@ -345,7 +327,7 @@ def send_token_via_email(user, token, otp_secret, otp_issuer, subject=None, mess
 	}
 
 	enqueue(method=frappe.sendmail, queue='short', timeout=300, event=None,
-		async=True, job_name=None, now=False, **email_args)
+		job_name=None, now=False, **email_args)
 	return True
 
 def get_qr_svg_code(totp_uri):

@@ -27,29 +27,18 @@ class WOD(WebsiteGenerator):
 #		condition_field = "publish",
 #		page_title_field = "titulo",
 #	)
-	print 'PAGINA WEB'
-	print website
-
 
 
 
 	def get_context(self, context):
-		print 'vim aqqqqqqqqqqqqqqqqqqqqqq'
-		print 'vim aqqqqqqqqqqqqqqqqqqqqqq'
-		print 'vim aqqqqqqqqqqqqqqqqqqqqqq'
-
 #		context.show_search=True
 
 		context.title = _("WODS")
 		#context.parents = get_parent_item_groups(self.item_group)
 		context.parents = [{'name': 'wods', 'title': _('All WODS') }]
-
-		print context
 		return context
 
 	def validate(self):
-		print self.docstatus
-		print self.publish
 		if not self.route:
 			self.route = self.name
 
@@ -58,7 +47,6 @@ class WOD(WebsiteGenerator):
 			self.publish=0
 
 	def before_cancel(self):
-		print 'Antes cancelar'
 		self.publish = 0
 
 

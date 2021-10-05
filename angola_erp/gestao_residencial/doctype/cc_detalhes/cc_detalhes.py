@@ -11,7 +11,5 @@ from frappe.model.naming import make_autoname
 
 
 class CC_detalhes(Document):
-
 	def autoname(self):
-		print "cc detalhes ", self.numero_registo
 		self.name = self.numero_registo

@@ -15,11 +15,10 @@ def validate(doc,method):
 	#Validation for Age of Employee should be Greater than 18 years at the time of Joining.
 	dob = getdate(doc.date_of_birth)
 	doj = getdate(doc.date_of_joining)
-	print relativedelta(doj, dob).years
 	if relativedelta(doj, dob).years < 18:
 		frappe.msgprint("Não é permitido criar trabalhadores menores de 18 anos de idade", raise_exception = 1)
 	if doc.relieving_date:
-		if doc.status <> "Left":
+		if doc.status != "Left":
 			frappe.msgprint(_("Status has to be 'LEFT' as the Relieving Date is populated"),raise_exception =1)
 		#Check if left to disable the username...
 		if doc.status == "Left":

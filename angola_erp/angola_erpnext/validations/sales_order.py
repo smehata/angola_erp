@@ -5,10 +5,10 @@ from frappe import msgprint
 
 import angola_erp
 from angola_erp.util.cambios import cambios
-from angola_erp.util.angola import get_lista_retencoes
-from angola_erp.util.angola import get_taxa_retencao
-from angola_erp.util.angola import get_taxa_ipc
-from angola_erp.util.angola import get_taxa_iva
+# from angola_erp.util.angola import get_lista_retencoes
+# from angola_erp.util.angola import get_taxa_retencao
+# from angola_erp.util.angola import get_taxa_ipc
+# from angola_erp.util.angola import get_taxa_iva
 
 import erpnext
 
@@ -24,19 +24,13 @@ from erpnext.stock.get_item_details import get_batch_qty
 ####
 
 def validate(doc,method):
-	
-	print "+VALIDAR SALES INVOICE+"
-	print "+VALIDAR SALES INVOICE+"
-	print "+VALIDAR SALES INVOICE+"
-	print "+VALIDAR SALES INVOICE+"
-	print "+VALIDAR SALES INVOICE+"
 
-	taxavenda= cambios("BNA")
-	lista_retencoes = get_lista_retencoes()
-	lista_retencao = get_taxa_retencao()
-	lista_impostos = get_taxa_ipc()
+	# taxavenda= cambios("BNA")
+	# lista_retencoes = get_lista_retencoes()
+	# lista_retencao = get_taxa_retencao()
+	# lista_impostos = get_taxa_ipc()
 
-	lista_iva = get_taxa_iva()
+	# lista_iva = get_taxa_iva()
 
 	temretencao = False 
 	temimpostoconsumo = False 
@@ -63,26 +57,26 @@ def validate(doc,method):
 
 	numISelo = 0	#contador Imposto de Selo
 
-	for x in lista_retencoes:
-		if x.descricao =='Retencao na Fonte':
-			print ('pertagem ', x.percentagem)
-			retencaopercentagem = x.percentagem
-		elif (x.descricao =='IPC') or (x.descricao =='Imposto de Consumo'):
-			print ('IPC % ', x.percentagem)
-			percentagem = x.percentagem
-		elif ('Imposto de Selo' in x.descricao):
-
-			print ('Imposto de Selo % ', x.percentagem)
-			print (x.descricao)
-			print ('metade '), x.metade_do_valor
-			impostoselotransit.append([x.descricao, x.percentagem, x.metade_do_valor])
-
-			#impostoselotranspercentagem = x.percentagem
-			#if (x.metade_do_valor):
-			#	metadedovalor = True	
-		elif (x.descricao.upper() =='IVA'.upper()) or ("Imposto Valor Acrescentado".upper() == x.descricao.upper() or 'Acrescentado'.upper() in x.descricao.upper()):
-			print ('IVA % ', x.percentagem)
-			percentagem = x.percentagem
+	# for x in lista_retencoes:
+	# 	if x.descricao =='Retencao na Fonte':
+	# 		print ('pertagem ', x.percentagem)
+	# 		retencaopercentagem = x.percentagem
+	# 	elif (x.descricao =='IPC') or (x.descricao =='Imposto de Consumo'):
+	# 		print ('IPC % ', x.percentagem)
+	# 		percentagem = x.percentagem
+	# 	elif ('Imposto de Selo' in x.descricao):
+	#
+	# 		print ('Imposto de Selo % ', x.percentagem)
+	# 		print (x.descricao)
+	# 		print ('metade '), x.metade_do_valor
+	# 		impostoselotransit.append([x.descricao, x.percentagem, x.metade_do_valor])
+	#
+	# 		#impostoselotranspercentagem = x.percentagem
+	# 		#if (x.metade_do_valor):
+	# 		#	metadedovalor = True
+	# 	elif (x.descricao.upper() =='IVA'.upper()) or ("Imposto Valor Acrescentado".upper() == x.descricao.upper() or 'Acrescentado'.upper() in x.descricao.upper()):
+	# 		print ('IVA % ', x.percentagem)
+	# 		percentagem = x.percentagem
 
 
 
@@ -110,29 +104,15 @@ def validate(doc,method):
 				print ("IMPOSTO DE SELO TRANS")
 				print ("IMPOSTO DE SELO TRANS")
 				for x1 in impostoselotransit:
-					print 'loop no imposto selo'
-					print x1
-					print x1[0]
-					print x1[1]
-					print x1[2]
 					if x1[0] == prod[0].que_imposto_de_selo:
-						print 'Imposto CORRETO!!!!!'
-						print 'Imposto CORRETO!!!!!'
-						print 'Imposto CORRETO!!!!!'
 
 						if x1[2] == 1:	#metade do valor TRUE
-							print 'METADE DO VALOR!!!'
 							metadedovalor = True
 						else:
 							metadedovalor = False
 
 						impostoselotranspercentagem = x1[1]
-						
-						print (flt(i.amount) * x1[1])
-						print ('Selo % ',((i.amount * impostoselotranspercentagem) / 100))
 						break
-				print 'continua....'
-				print metadedovalor
 				#i.retencao_na_fonte = (i.amount * retencaopercentagem) / 100
 				if (metadedovalor):
 					totalimpostoselotrans += ((i.amount/2) * impostoselotranspercentagem) / 100
@@ -140,7 +120,6 @@ def validate(doc,method):
 				else:
 					totalimpostoselotrans += (i.amount * impostoselotranspercentagem) / 100
 					i.imposto_de_selo_trans = (i.amount * impostoselotranspercentagem) / 100
-				print totalimpostoselotrans
 
 
 			totalgeralimpostoconsumo += i.imposto_de_consumo					
@@ -186,8 +165,8 @@ def validate(doc,method):
 							if prod[0].imposto_de_consumo == 1:
 
 								if aii.imposto_de_consumo == 0:
-									print ""
-								
+									print("")
+
 								if aii.retencao_na_fonte == 1:
 										
 									totalgeralretencaofonte +=  (aii.amount * retencaopercentagem) / 100
@@ -198,11 +177,6 @@ def validate(doc,method):
 
 
 								despesas = (percentagem * totaldespesas_noretencaofonte)/100
-								print percentagem
-								print totaldespesas_noretencaofonte
-								print despesas
-								print totalgeralimpostoconsumo
-								print ai.account_head
 
 								ai.charge_type="Actual"
 								#ai.tax_amount=despesas
@@ -221,12 +195,6 @@ def validate(doc,method):
 						percentagem = ai.rate
 
 					despesas = (ai.rate * totaldespesas_noretencaofonte)/100
-
-					print percentagem
-					print totaldespesas_noretencaofonte
-					print despesas
-
-					print totalgeralimpostoconsumo
 					if despesas != totalgeralimpostoconsumo:
 
 						ai.charge_type = "Actual"
@@ -236,24 +204,12 @@ def validate(doc,method):
 						ai.charge_type = "Actual"
 						ai.tax_amount = despesas
 			elif "34220000" in ai.account_head: #IVA
-				print "TEM IVA......"
-				print "TEM IVA......"
-				print "TEM IVA......"
-				print "TEM IVA......"
+				pass
 
 			else:
-				print "SEM DESPESAS MAS CALCULA IPC"
-				print "SEM DESPESAS MAS CALCULA IPC"
 				ai.charge_type = "Actual"
 				ai.tax_amount = totalgeralimpostoconsumo
 				ai.total = totalgeralimpostoconsumo + doc.net_total
-
-
-
-
-	print "VALOR POR EXTENSO"
-
-	print totalgeralimpostoconsumo
 
 	#Save Total Taxes and Charges if IPC exists
 	if totalgeralimpostoconsumo:
@@ -267,7 +223,6 @@ def validate(doc,method):
 		doc.outstanding_amount = doc.grand_total
 
 	company_currency = erpnext.get_company_currency(doc.company)
-	print company_currency
 	if (company_currency =='KZ'):
 		doc.in_words = num2words(doc.rounded_total, lang='pt_BR').title() + ' Kwanzas.'
 	else:

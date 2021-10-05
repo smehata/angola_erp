@@ -11,7 +11,8 @@ from erpnext.accounts.party import get_party_account_currency
 from erpnext.controllers.accounts_controller import get_taxes_and_charges
 
 from frappe.utils import cstr, get_datetime, getdate, cint, get_datetime_str
-
+from idna import unicode
+from pyparsing import basestring
 
 
 def as_unicode(text, encoding='utf-8'):
@@ -392,7 +393,7 @@ def submit_invoice(si_doc, name):
 		si_doc.insert()
 		si_doc.submit()
 		frappe.db.commit()
-	except Exception, e:
+	except Exception as e:
 		if frappe.message_log: frappe.message_log.pop()
 		frappe.db.rollback()
 		save_invoice(e, si_doc, name)
@@ -406,9 +407,6 @@ def save_invoice(e, si_doc, name):
 
 
 def get_mesas_list():
-
-	print "mesas "
-	print frappe.db.sql(""" select name, nome_mesa, numero_cartao, mesa_image, status_mesa from tabMesas where status_mesa in ('Livre','Ocupada')  """, as_dict=1)
 	return frappe.db.sql(""" 
 		select
 			name, nome_mesa, numero_cartao, mesa_image, status_mesa
@@ -422,7 +420,7 @@ def submit_atendimento(si_doc, name):
 		si_doc.insert()
 		si_doc.save()
 		#si_doc.submit()
-	except Exception, e:
+	except Exception as e:
 		if frappe.message_log: frappe.message_log.pop()
 		frappe.db.rollback()
 		save_atendimento(e, si_doc, name)

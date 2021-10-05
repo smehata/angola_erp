@@ -5,10 +5,10 @@ from frappe import msgprint
 
 import angola_erp
 from angola_erp.util.cambios import cambios
-from angola_erp.util.angola import get_lista_retencoes
-from angola_erp.util.angola import get_taxa_retencao
-from angola_erp.util.angola import get_taxa_ipc
-from angola_erp.util.angola import get_taxa_iva
+# from angola_erp.util.angola import get_lista_retencoes
+# from angola_erp.util.angola import get_taxa_retencao
+# from angola_erp.util.angola import get_taxa_ipc
+# from angola_erp.util.angola import get_taxa_iva
 
 import erpnext
 
@@ -24,7 +24,7 @@ from datetime import datetime
 
 from subprocess import Popen, PIPE
 
-import angola_erp.util.saft_ao
+# import angola_erp.util.saft_ao
 
 ####
 # Helkyd modified 24-04-2019
@@ -33,19 +33,13 @@ import angola_erp.util.saft_ao
 ultimoreghash = None
 
 def validate(doc,method):
-	
-	print "+VALIDAR SALES INVOICE+"
-	print "+VALIDAR SALES INVOICE+"
-	print "+VALIDAR SALES INVOICE+"
-	print "+VALIDAR SALES INVOICE+"
-	print "+VALIDAR SALES INVOICE+"
 
 	taxavenda= cambios("BNA")
-	lista_retencoes = get_lista_retencoes()
-	lista_retencao = get_taxa_retencao()
-	lista_impostos = get_taxa_ipc()
+	# lista_retencoes = get_lista_retencoes()
+	# lista_retencao = get_taxa_retencao()
+	# lista_impostos = get_taxa_ipc()
 
-	lista_iva = get_taxa_iva()
+	# lista_iva = get_taxa_iva()
 
 	temretencao = False 
 	temimpostoconsumo = False 
@@ -74,29 +68,29 @@ def validate(doc,method):
 
 	numISelo = 0	#contador Imposto de Selo
 
-	for x in lista_retencoes:
-		if x.descricao.upper() =='Retencao na Fonte'.upper():
-			print ('pertagem ', x.percentagem)
-			retencaopercentagem = x.percentagem
-		elif (x.descricao.upper() =='IPC'.upper()) or (x.descricao.upper() =='Imposto de Consumo'.upper()):
-			print ('IPC % ', x.percentagem)
-			percentagem = x.percentagem
-		elif ('Imposto de Selo'.upper() in x.descricao.upper()):
-
-			print ('Imposto de Selo % ', x.percentagem)
-			print (x.descricao)
-			print ('metade '), x.metade_do_valor
-			impostoselotransit.append([x.descricao, x.percentagem, x.metade_do_valor])
-
-			#impostoselotranspercentagem = x.percentagem
-			#if (x.metade_do_valor):
-			#	metadedovalor = True	
-
-		elif (x.descricao.upper() =='IVA'.upper()) or ("Imposto Valor Acrescentado".upper() == x.descricao.upper() or 'Acrescentado'.upper() in x.descricao.upper()):
-			print ('IVA % ', x.percentagem)
-			percentagemiva = x.percentagem
-
-
+	# for x in lista_retencoes:
+	# 	if x.descricao.upper() =='Retencao na Fonte'.upper():
+	# 		print ('pertagem ', x.percentagem)
+	# 		retencaopercentagem = x.percentagem
+	# 	elif (x.descricao.upper() =='IPC'.upper()) or (x.descricao.upper() =='Imposto de Consumo'.upper()):
+	# 		print ('IPC % ', x.percentagem)
+	# 		percentagem = x.percentagem
+	# 	elif ('Imposto de Selo'.upper() in x.descricao.upper()):
+	#
+	# 		print ('Imposto de Selo % ', x.percentagem)
+	# 		print (x.descricao)
+	# 		print ('metade '), x.metade_do_valor
+	# 		impostoselotransit.append([x.descricao, x.percentagem, x.metade_do_valor])
+	#
+	# 		#impostoselotranspercentagem = x.percentagem
+	# 		#if (x.metade_do_valor):
+	# 		#	metadedovalor = True
+	#
+	# 	elif (x.descricao.upper() =='IVA'.upper()) or ("Imposto Valor Acrescentado".upper() == x.descricao.upper() or 'Acrescentado'.upper() in x.descricao.upper()):
+	# 		print ('IVA % ', x.percentagem)
+	# 		percentagemiva = x.percentagem
+	#
+	#
 
 
 	for i in doc.get("items"):			
@@ -121,18 +115,8 @@ def validate(doc,method):
 				print ("IMPOSTO DE SELO TRANS")
 				print ("IMPOSTO DE SELO TRANS")
 				for x1 in impostoselotransit:
-					print 'loop no imposto selo'
-					print x1
-					print x1[0]
-					print x1[1]
-					print x1[2]
 					if x1[0] == prod[0].que_imposto_de_selo:
-						print 'Imposto CORRETO!!!!!'
-						print 'Imposto CORRETO!!!!!'
-						print 'Imposto CORRETO!!!!!'
-
 						if x1[2] == 1:	#metade do valor TRUE
-							print 'METADE DO VALOR!!!'
 							metadedovalor = True
 						else:
 							metadedovalor = False
@@ -142,8 +126,6 @@ def validate(doc,method):
 						print (flt(i.amount) * x1[1])
 						print ('Selo % ',((i.amount * impostoselotranspercentagem) / 100))
 						break
-				print 'continua....'
-				print metadedovalor
 				#i.retencao_na_fonte = (i.amount * retencaopercentagem) / 100
 				if (metadedovalor):
 					totalimpostoselotrans += ((i.amount/2) * impostoselotranspercentagem) / 100
@@ -151,11 +133,9 @@ def validate(doc,method):
 				else:
 					totalimpostoselotrans += (i.amount * impostoselotranspercentagem) / 100
 					i.imposto_de_selo_trans = (i.amount * impostoselotranspercentagem) / 100
-				print totalimpostoselotrans
 
-			if prod[0].iva_isencao == 0:	#TEM IVA	
-				print "IVA IVA"
-				print "IVA IVA"
+			if prod[0].iva_isencao == 0:	#TEM IVA
+				pass
 				
 
 			totalgeralimpostoconsumo += i.imposto_de_consumo					
@@ -163,12 +143,7 @@ def validate(doc,method):
 
 			#BATCH Qty 
 			if i.warehouse and i.item_code and i.batch_no:
-				print 'BATCH NO verifica a QTD'
-				print i.batch_no
-				print i.warehouse
-				print i.item_code
 				print ('qtd atual ', i.actual_qty)
-				print get_batch_qty(i.batch_no,i.warehouse,i.item_code)['actual_batch_qty']
 				#print get_batch_qty(i.warehouse,i.item_code)['actual_batch_qty']
 				#for xx in get_batch_qty(i.batch_no,i.warehouse,i.item_code)['actual_batch_qty']:
 				#	print "LISTA BATCHES....."
@@ -176,7 +151,7 @@ def validate(doc,method):
 
 				i.actual_batch_qty = get_batch_qty(i.batch_no,i.warehouse,i.item_code)['actual_batch_qty']
 				if i.actual_qty == 0:
-					print 'ACTUAL QTY ZEROOOOOOOO'
+					pass
 					#i.actual_qty = get_batch_qty(i.batch_no,i.warehouse,i.item_code)['actual_batch_qty']
 
 	
@@ -221,8 +196,8 @@ def validate(doc,method):
 							if prod[0].imposto_de_consumo == 1:
 
 								if aii.imposto_de_consumo == 0:
-									print ""
-								
+									print("")
+
 								if aii.retencao_na_fonte == 1:
 										
 									totalgeralretencaofonte +=  (aii.amount * retencaopercentagem) / 100
@@ -233,11 +208,7 @@ def validate(doc,method):
 
 
 								despesas = (percentagem * totaldespesas_noretencaofonte)/100
-								print percentagem
-								print totaldespesas_noretencaofonte
-								print despesas
-								print totalgeralimpostoconsumo
-								print ai.account_head
+
 
 								ai.charge_type="Actual"
 								#ai.tax_amount=despesas
@@ -259,11 +230,6 @@ def validate(doc,method):
 
 					despesas = (ai.rate * totaldespesas_noretencaofonte)/100
 
-					print percentagem
-					print totaldespesas_noretencaofonte
-					print despesas
-
-					print totalgeralimpostoconsumo
 					if despesas != totalgeralimpostoconsumo:
 
 						ai.charge_type = "Actual"
@@ -273,10 +239,6 @@ def validate(doc,method):
 						ai.charge_type = "Actual"
 						ai.tax_amount = despesas
 			elif "34220000" in ai.account_head: #IVA
-				print "TEM IVA......"
-				print "TEM IVA......"
-				print "TEM IVA......"
-				print "TEM IVA......"
 
 				for aii in doc.get("items"):
 					if aii.parent == doc.name:
@@ -310,16 +272,11 @@ def validate(doc,method):
 						ai.tax_amount = despesas #totalgeralimpostoconsumo 
 						'''
 						if prod[0].iva_isencao == 1:	#NO NO IVA
-							print "sem iva ", prod[0].item_code
 							ai.charge_type="Actual"
 							ai.tax_amount = totalgeraliva
 							ai.total = totalgeraliva + doc.net_total
 
 						elif prod[0].iva_isencao == 0:	#IVA
-							print "IVA"
-							print "IVA ", aii.item_code
-							print aii.amount
-							print percentagemiva
 							totalgeraliva += (aii.amount * percentagemiva)/100
 							if ai.charge_type == "Actual":
 								ai.tax_amount = totalgeraliva
@@ -330,18 +287,10 @@ def validate(doc,method):
 
 
 			else:
-				print "SEM DESPESAS MAS CALCULA IPC"
-				print "SEM DESPESAS MAS CALCULA IPC"
 				ai.charge_type = "Actual"
 				ai.tax_amount = totalgeralimpostoconsumo
 				ai.total = totalgeralimpostoconsumo + doc.net_total
 
-
-
-
-	print "VALOR POR EXTENSO"
-
-	print totalgeralimpostoconsumo
 
 	#Save Total Taxes and Charges if IPC exists
 	if totalgeralimpostoconsumo:
@@ -357,17 +306,13 @@ def validate(doc,method):
 #			doc.outstanding_amount = doc.grand_total
 	elif totalgeraliva:
 		#IVA
-		print "iva nos TOTAIS"
 		if doc.currency == "KZ":
 			doc.base_total_taxes_and_charges = totalgeraliva
 			doc.total_taxes_and_charges = totalgeraliva
-			print 'totalgeraliva ', totalgeraliva
 		if not doc.additional_discount_percentage:
 			doc.base_grand_total = totalgeraliva + doc.net_total
 			doc.grand_total = totalgeraliva + doc.net_total
-			print 'totalgeraliva + net total ', totalgeraliva + doc.net_total
 #			doc.rounded_total = doc.grand_total
-			print 'Grand total ', doc.grand_total
 
 #			doc.base_rounded_total = doc.grand_total
 #			doc.outstanding_amount = doc.grand_total
@@ -382,7 +327,6 @@ def validate(doc,method):
 	#	doc.base_rounding_adjustment = round(doc.base_rounding_adjustment)
 
 	company_currency = erpnext.get_company_currency(doc.company)
-	print company_currency
 	if (company_currency =='KZ'):
 		doc.in_words = num2words(doc.rounded_total, lang='pt_BR').title() + ' Kwanzas.'
 	else:
@@ -390,8 +334,6 @@ def validate(doc,method):
 
 	
 	ultimodoc = frappe.db.sql(""" select max(name),creation,docstatus,hash_erp,hashcontrol_erp from `tabSales Invoice` where (docstatus = 1 or docstatus = 2)  and hash_erp <> '' """,as_dict=True)
-	print 'VALIDARrrrrrrrrrrrrrrrrrr'
-	print ultimodoc
 	global ultimoreghash
 	ultimoreghash = ultimodoc
 
@@ -413,11 +355,6 @@ def before_submit(doc,method):
 	fileregisto = "registo"
 	fileregistocontador = 1	#sera sempre aqui 
 
-	#get the last doc generated 
-	print 'verifica se ja tem o registo'
-	print 'verifica se ja tem o registo' 
-	print ultimoreghash
-
 	if ultimoreghash:
 		ultimodoc = ultimoreghash
 	else:
@@ -427,20 +364,12 @@ def before_submit(doc,method):
 
 
 	criado = datetime.strptime(doc.creation,'%Y-%m-%d %H:%M:%S.%f').strftime("%Y-%m-%dT%H:%M:%S") 
-	
-	print 'ULTIMO HASH.....'
-	print ultimodoc
+
 #	print ultimodoc[0].hash_erp
 	if ultimodoc[0].hash_erp == "" or ultimodoc[0].hash_erp == None:
 		#1st record
-		print 'primeiro registo HASH'
-		#print doc.posting_date.strftime("%Y-%m-%d")
-
-		print doc.creation	
-		print criado
 		hashinfo = str(doc.posting_date) + ";" + str(criado) + ";" + str(doc.name) + ";" + str(doc.rounded_total) + ";"
 	else:
-		print 'segundo registo'
 		#print chaveanterior
 		hashinfo = str(doc.posting_date)  + ";" + str(criado) + ";" + str(doc.name) + ";" + str(doc.rounded_total) + ";" + str(ultimodoc[0].hash_erp)
 
@@ -448,20 +377,12 @@ def before_submit(doc,method):
 #	hashfile = open("/tmp/" + str(fileregisto) + str(fileregistocontador) + ".txt","wb")
 #	hashfile.write(hashinfo)
 
-	#to generate the HASH
-#	angola_erp.util.saft_ao.assinar_ssl()
-	print "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-#	os.system("/usr/bin/python /tmp/angolaerp.cert2/assinar_ssl.py")	
-	print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-	print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-	#print angola_erp.util.saft_ao.assinar_ssl1(hashinfo)
 	 
 
 #	p = Popen(["/frappe-bench/apps/angola_erp/angola_erp/util/hash_ao_erp.sh"],shell=True, stdout=PIPE, stderr=PIPE)
 #	p = Popen(["exec ~/frappe-bench/apps/angola_erp/angola_erp/util/hash_ao_erp.sh"],shell=True, stdout=PIPE, stderr=PIPE)
 #	output, errors = p.communicate()
 #	p.wait()
-	print 'Openssl Signing...'
 #	print output
 #	print errors
 
@@ -498,11 +419,6 @@ def on_submit(doc,method):
 
 	#Imposto de Selo
 	if doc.is_pos:
-		print "Pagamento do IS no POS"
-		print "Pagamento do IS no POS"
-		print "Pagamento do IS no POS"
-		print "Pagamento do IS no POS"
-		print "Pagamento do IS no POS"
 
 		global is_temp
 
@@ -524,10 +440,6 @@ def on_submit(doc,method):
 		#for payment_mode in doc.payments:
 		#	if payment_mode.amount:
 
-		# POS, make payment entries
-		print "Pagamento....CREDITO"
-		print "Pagamento....CREDITO"
-		print "Pagamento....CREDITO"
 
 		gl_entries.append(
 			doc.get_gl_dict({

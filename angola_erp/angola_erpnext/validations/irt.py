@@ -12,16 +12,10 @@ import frappe.utils
 import datetime
 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 
 @frappe.whitelist()
 def get_lista_retencoes():
 	j= frappe.db.sql(""" SELECT name, descricao, percentagem from `tabRetencoes` """,as_dict=True)
-
-	print " LISTA RETENCOES"
-	print j	
 	return j
 
 
@@ -29,12 +23,6 @@ def get_lista_retencoes():
 @frappe.whitelist()
 #TO BE REMOVED IF Client ERPNEXT v8
 def set_faltas1(mes,ano,empresa):
-	print " DADOS ATTENDANCE"
-	print " POR RETIRAR "
-	print " POR RETIRAR "
-	print " POR RETIRAR "
-	print " POR RETIRAR "
-	print  mes, ' ', ano
 	for tra in frappe.db.sql(""" SELECT name,status from tabEmployee where status = 'Active' and company = %s """,(empresa), as_dict=True):
 
 		j= frappe.db.sql(""" SELECT count(status)
@@ -42,8 +30,6 @@ def set_faltas1(mes,ano,empresa):
 
 		j4= frappe.db.sql(""" SELECT count(status) from `tabAttendance` where employee = %s and status = 'Half Day' and month(attendance_date) = %s and year(attendance_date) = %s and docstatus=1 """,(tra.name,mes,ano), as_dict=False)
 
-		print " ATTENDANCE"
-		print j[0][0]	
 		#save on Employee record
 		j1 = frappe.get_doc("Employee",tra.name)
 		j1.numer_faltas = flt(j[0][0]) + (flt(j4[0][0])/2)
@@ -52,9 +38,6 @@ def set_faltas1(mes,ano,empresa):
 
 @frappe.whitelist()
 def set_faltas(mes,ano,empresa):
-	print " DADOS ATTENDANCE - SET FALTAS"
-	print " DADOS ATTENDANCE - SET FALTAS"
-	print  mes, ' ', ano
 	for tra in frappe.db.sql(""" SELECT name,status from tabEmployee where status = 'Active' and company = %s """,(empresa), as_dict=True):
 
 		#Faltas Injustificadas
@@ -75,32 +58,18 @@ def set_faltas(mes,ano,empresa):
 		j4= frappe.db.sql(""" SELECT count(status)
 		from `tabAttendance` where employee = %s and status = 'Half Day' and processar_mes_seguinte = 0 and tipo_de_faltas = 'Falta Injustificada' and month(attendance_date) = %s and year(attendance_date) = %s and docstatus=1 """,(tra.name,mes,ano), as_dict=False)
 
-		print 'VERIFICA ATTENDANCE e LEAVE'
-		print tra.name
-
 		#print j3
 		
 
 		#Gets Faltas do previous month
-		print 'MES ANTERIOR COM FALTAS'
-		print 'MES ANTERIOR COM FALTAS'
-		print 'MES ANTERIOR COM FALTAS'
-		print mes
-		print int(mes)-1
-		print ano
-
 		j5 = frappe.db.sql(""" SELECT count(status) from `tabAttendance` where employee = %s and (status = 'Half Day' or status = 'Absent') and tipo_de_faltas = 'Falta Injustificada' and month(attendance_date) = %s and year(attendance_date) = %s and docstatus=1 and processar_mes_seguinte = 1  """,(tra.name,int(mes)-1,ano), as_dict=False)
-
-		print 'RESULTA MES ', j5
 
 		j1 = frappe.get_doc("Employee",tra.name)		
 
 
 		if j[0][0] > 0 :	
 			#save on Employee record
-			#j1 = frappe.get_doc("Employee",tra.name)
-			print " ATTENDANCE"			
-			print j[0][0]
+			#j1 = frappe.get_doc("Employee",tra.name
 			
 			j1.numer_faltas = j[0][0]
 			#j1.save()
@@ -114,9 +83,6 @@ def set_faltas(mes,ano,empresa):
 			#save on Employee record
 			#j1 = frappe.get_doc("Employee",tra.name)
 
-			print " LEAVE APPLICATION"					
-			print j2[0][0]
-
 			j1.subsidio_de_ferias = 1			
 			#j1.save()
 		else:
@@ -128,9 +94,6 @@ def set_faltas(mes,ano,empresa):
 		if j3[0][0] > 0:
 			#save on Employee record
 			#j1 = frappe.get_doc("Employee",tra.name)
-
-			print " HORAS EXTRAS"					
-			print j3[0][0]
 
 			j1.horas_extras = j3[0][0]			
 			#j1.save()
@@ -144,12 +107,6 @@ def set_faltas(mes,ano,empresa):
 		if j4[0][0] > 0:
 			#save on Employee record
 			#j1 = frappe.get_doc("Employee",tra.name)
-
-			print " FALTA HALF DAY"					
-			#print j4[0][0]
-			print j[0][0] + (flt(j4[0][0])/2)
-			print 'aaaa'
-
 			j1.numer_faltas = flt(j[0][0])	+ (flt(j4[0][0])/2)
 			#j1.save()
 		else:
@@ -163,12 +120,6 @@ def set_faltas(mes,ano,empresa):
 		if j5[0][0] > 0:
 			#save on Employee record
 			#j1 = frappe.get_doc("Employee",tra.name)
-
-			print " FALTAS DO MES ANTERIOR"					
-			#print j4[0][0]
-			print j[0][0] + (flt(j4[0][0])/2) + flt(j5[0][0])
-			print 'aaaa'
-
 			j1.numer_faltas = flt(j[0][0])	+ (flt(j4[0][0])/2) + flt(j5[0][0])
 			#j1.save()
 		else:
@@ -192,15 +143,10 @@ def set_salary_slip_pay_days(pag,emp,ano,mes):
 	ret = {}
 	j= frappe.db.sql(""" UPDATE `tabSalary Slip` SET payment_days = %s where employee = %s and fiscal_year = %s and month = %s """,(pag,emp,ano,mes), as_dict=False)
 
-	print " Atualizar SALARY SLIP"
-	print j
-	return j
 
 
 @frappe.whitelist()
 def get_faltas(emp,mes,ano, empresa):
-	print " DADOS ATTENDANCE"
-	print emp, ' ', mes, ' ', ano
 
 	#Falta Injustificada
 	j= frappe.db.sql(""" SELECT count(status)
@@ -212,11 +158,6 @@ def get_faltas(emp,mes,ano, empresa):
 	#Half day Falta Injustificada
 	j3= frappe.db.sql(""" SELECT count(status) from `tabAttendance` where employee = %s and status = 'Half Day' and tipo_de_faltas = 'Falta Injustificada' and month(attendance_date) = %s and year(attendance_date) = %s and docstatus=1 and company = %s """,(emp,mes,ano,empresa), as_dict=False)
 
-
-	print " ATTENDANCE"
-	print j[0][0], j3[0][0]	
-	print " LEAVE APPLICATION"		
-	print j2[0][0]
 	
 	#save on Employee record
 	j1 = frappe.get_doc("Employee",emp)
@@ -239,27 +180,17 @@ def get_irt(start):
 	j= frappe.db.sql(""" SELECT valor_inicio, valor_fim, valor_percentual,parcela_fixa
 	from `tabIRT` where valor_inicio <= %(start)s and valor_fim >=%(start)s """,{
 	"start": start}, as_dict=True)
-
-	print " PRIMEIRO"
-	print j	
 	# if J is ZERO than should get LAST RECORD.
 
 	if not j:
 		ret = frappe.db.sql("""SELECT valor_inicio, valor_fim, valor_percentual, parcela_fixa
-		from `tabIRT` ORDER BY valor_inicio DESC LIMIT 1""");
-		j = ret
-
-		print " SEGUNDO"
-	print  j
+		from `tabIRT` ORDER BY valor_inicio DESC LIMIT 1""")
 	return j
 
 @frappe.whitelist()
 def get_lista_irt():
 	j= frappe.db.sql(""" SELECT valor_inicio, valor_fim, valor_percentual,parcela_fixa
 	from `tabIRT` """,as_dict=True)
-
-	print " LISTA IRT"
-	print j	
 	return j
 
 
@@ -282,7 +213,7 @@ def set_ded(ded,d_val):
 
 @frappe.whitelist()
 def seguranca_social(jv_entry):
-
+	pass
 	#Read values from the JV created and get 72221 account value to calculate 8% and deposit on 7252 (Deb) and 3461 (Cre)
-	print "ALGUMA COISA ...."
+
 
